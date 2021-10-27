@@ -1,0 +1,17 @@
+﻿@using Microsoft.AspNetCore.Http
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="cursive-left" style="color: #D2691E; "> All post from topic @ViewData["TopicName"]: </h2>
+
+@{
+    foreach (var post in ViewBag.Posts)
+    {
+        <a id="containerTopic" href="~/Post/Delete/@post.PostId">
+            @post.PostName
+        </a>
+        <br>
+        <br>
+    }
+}

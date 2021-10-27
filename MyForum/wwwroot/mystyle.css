@@ -1,0 +1,180 @@
+﻿.centrend {
+    text-align: center;
+}
+
+a {
+    text-decoration: none;
+}
+
+td#name{
+    text-align: center;
+    padding-left: 600px;
+    padding-top: 20px;
+}
+
+td#login {
+    text-align: center;
+    padding-left: 500px;
+    padding-top: 20px;
+}
+
+.cursive-center {
+    font-family: cursive;
+    font-size: 26px;
+    padding-left: 470px;
+    margin-top:22px;
+    float: left;
+    max-width: auto;
+}
+
+a.cursive-center {
+    text-decoration: none;
+}
+
+textarea.desc {
+    width: 160px;
+    height: 40px;
+}
+
+.cursive-left {
+    font-family: cursive;
+    text-align: left;
+    font-size: 26px;
+}
+
+#content {
+    width: 99%;
+    position: absolute;
+}
+
+#header {
+    height: 80px;
+    min-width: 60%;
+    margin-left: 255px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    background: #FFEFD5;
+}
+
+#main {
+    background-color: #FFDEAD;
+    padding-top: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-left: 255px;
+    width: auto;
+    min-width: 60%;
+    min-height: 325px;
+    height: auto;
+    margin-bottom: 10px;
+    border-radius: 8px;
+}
+
+#leftSidebar {
+    background-color: #FFEFD5;
+    height: 99%;
+    width: 220px;
+    float: left;
+    padding: 8px;
+    min-height: 300px;
+    margin-right: 10px;
+    border-right: 5px solid #FDF5E6;
+    border-radius: 10px;
+    position:fixed;
+}
+
+#rigthSidebar {
+    overflow: auto;
+    height: 550px;
+    background: #9ef7af;
+    float: right;
+    width: 200px;
+    margin-bottom: 10px;
+}
+
+#postDescription {
+    padding-top: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+    background-color: white;
+    border-radius: 8px;
+    height: auto;
+}
+
+#topicName {
+    font-size: 18px;
+    font-family: cursive;
+    color: black;
+}
+
+input[type="submit"].wysija-submit {
+    border-radius: 10px;
+    border: medium;
+    font-family: 'Times New Roman';
+}
+
+#topicAuthor {
+    font-size: 12px;
+    font-family: cursive;
+    color: #D2691E;
+}
+
+#postName {
+    padding-left: 20px;
+    font-size: 18px;
+    font-family: cursive;
+    color: black;
+}
+
+#postAuthor {
+    padding-left: 20px;
+    font-size: 12px;
+    font-family: cursive;
+    color: #D2691E;
+}
+
+.login {
+    font-family: cursive;
+    font-size: 14px;
+}
+
+.post{
+    padding-top:15px;
+}
+
+#containerTopic {
+    width: 830px;
+    height: 50px;
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border-top-right-radius: 8px;
+    border-top-left-radius: 8px;
+    background-color: white;
+}
+
+#containerTopic:hover {
+    background-color: #FFE4C4;
+    cursor: pointer;
+    border-block-color:white;
+}
+
+#styleTitle {
+    color: #D2691E;
+    font-family: cursive;
+    font-size: 26px;
+}
+
+a#styleTitle {
+    color: #D2691E;
+    font-family: cursive;
+    font-size: 26px;
+    text-decoration: none;
+}
+
+body {
+    background-color: #FDF5E6;
+}

@@ -1,0 +1,31 @@
+﻿@model MyForum.Controllers.Data.Models.Post
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Edit post";
+}
+
+<form asp-action="Edit" asp-controller="Post">
+    <div class="form-group">
+        <input asp-for="PostId" type="hidden" value="@ViewBag.Post.PostId" />
+    </div>
+    <div class="form-group">
+        <label asp-for="PostName" class="control-label">Post name</label>
+        <input type="text" asp-for="PostName" class="form-control" value="@ViewBag.Post.PostName" />
+    </div>
+    </br>
+    <div class="form-group">
+        <label asp-for="Description" class="control-label">Description</label>
+        <input asp-for="Description" class="form-control" value="@ViewBag.Post.Description"></input>
+    </div>
+    <div class="form-group">
+        <input asp-for="UserId" type="hidden" value="@ViewBag.Post.UserId" />
+    </div>
+    </br>
+    <div class="form-group">
+        <input asp-for="TopicId" type="hidden" value="@ViewBag.Post.TopicId" />
+    </div>
+    </br>
+    <div class="form-group">
+        <input type="submit" value="Edit" class="btn btn-default" />
+    </div>
+</form>

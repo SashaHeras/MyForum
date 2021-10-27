@@ -1,0 +1,53 @@
+﻿@using Microsoft.AspNetCore.Http
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="cursive-left" style="color: #D2691E; "> All post from topic @ViewData["TopicName"]: </h2>
+<br>
+
+@{
+    foreach (var post in ViewBag.Posts)
+    {
+        <a id="containerTopic" href="~/Post/Post/@post.PostId">
+            @post.PostName
+        </a>
+        <br>
+        <br>
+    }
+
+    <table style="padding-bottom: 20px">
+        <tr>
+            <td>
+                @using (Html.BeginForm("CreatePost", "Post", FormMethod.Post))
+                {
+                    <input type="hidden" name="TopicName" value=@ViewData["TopicName"]>
+                    <input type="submit" value="Create new post" />
+                    <br>
+                }
+            </td>
+        </tr>
+        <br />
+        <tr>
+            <td>
+                @using (Html.BeginForm("DeletePost", "Post", FormMethod.Post))
+                {
+                    <input type="hidden" name="TopicName" value=@ViewData["TopicName"]>
+                    <input type="submit" value="Delete post" />
+                    <br>
+                }
+            </td>
+        </tr>
+        <br />
+        <tr>
+            <td>
+                @using (Html.BeginForm("EditPosts", "Post", FormMethod.Post))
+                {
+                    <input type="hidden" name="TopicName" value=@ViewData["TopicName"]>
+                    <input type="submit" value="Edit post" />
+                    <br>
+                }
+            </td>
+        </tr>
+    </table>
+}

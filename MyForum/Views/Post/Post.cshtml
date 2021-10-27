@@ -1,0 +1,18 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="post">
+    <div id="postName">
+        @ViewBag.Post.PostName
+    </div>
+    <div id="postAuthor">
+        Author: <a href="~/Post/UserPosts/@ViewBag.Post.UserId"> @ViewData["UserName"] </a> 
+    </div>
+    </br>
+    <div>
+        <div id="postDescription">
+            @ViewBag.Post.Description
+        </div>
+    </div>
+</div>

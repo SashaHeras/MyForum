@@ -1,0 +1,16 @@
+﻿@using Microsoft.AspNetCore.Http
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="cursive-left" style="color: #D2691E; "> All post made by @ViewBag.UsersName: </h2>
+
+@{
+    foreach (var post in ViewBag.UserPosts)
+    {
+        <a id="containerTopic" href="~/Post/Post/@post.PostId">
+            @post.PostName
+        </a>
+        <br>
+    }
+}

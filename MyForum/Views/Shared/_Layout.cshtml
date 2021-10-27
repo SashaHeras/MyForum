@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+
+    <meta name="viewport" content="width=device-width" />
+    <title>MyForum</title>
+
+    <link href="~/mystyle.css" rel="stylesheet" type="text/css" />
+    <link href="~/lib/bootstrap/dist/css/bootstrap-reboot.min.css" rel="stylesheet" type="text/css" />
+
+</head>
+<body>
+    <div id="content">
+        <div id="leftSidebar">
+            <div id="cursive-center" style="color: #F4A460;">Menu</div>
+        </div>
+
+        <div id="header" style="text-align: center">
+            <table width="100%">
+                <tr><td width="93%" style="padding-top: 20px"><a id="styleTitle" href="~/Home/TopicsList">MyForum</a></td><td width="7%" style="padding-top: 20px"><a class="login">Log in</a></td></tr>
+            </table>
+        </div>
+
+        <div id="main">
+            @RenderBody()
+        </div>
+    </div>
+</body>
+</html>
