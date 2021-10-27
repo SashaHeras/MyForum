@@ -15,7 +15,7 @@ namespace MyForum.Controllers
     {
         private MyForumContext _context;
         private TopicRepository _topics;
-        private UserRepository _users;
+        private UserRepository _userRepository;
         private static Int32 _TopicId = -1;
         private readonly IPostRepository _allPosts;
 
@@ -24,7 +24,7 @@ namespace MyForum.Controllers
             _allPosts = postrepos;
             _context = context;
             _topics = new TopicRepository(_context);
-            _users = new UserRepository(_context);
+            _userRepository = new UserRepository(_context);
         }
 
         [Route("~/Post/PostsList/{id?}")]
@@ -44,7 +44,7 @@ namespace MyForum.Controllers
         {
             ViewBag.UserPosts = _allPosts.GetPostsByUserId(id);
 
-            ViewBag.UsersName = _users.GetUserById(id).Name;
+            ViewBag.UsersName = _userRepository.GetUserById(id).Name;
 
             return View();
         }
@@ -56,7 +56,7 @@ namespace MyForum.Controllers
             PostViewModel obj = new PostViewModel();
             obj.GetPostByTopicId = _allPosts.GetPostById(id);
 
-            ViewData["UserName"] = _users.GetUserNameById(obj.GetPostByTopicId.UserId);
+            ViewData["UserName"] = _userRepository.GetUserNameById(obj.GetPostByTopicId.UserId);
             ViewBag.Post = obj.GetPostByTopicId;
             return View(obj);
         }

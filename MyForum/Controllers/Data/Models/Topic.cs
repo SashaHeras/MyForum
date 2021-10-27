@@ -10,5 +10,4 @@ namespace MyForum.Controllers.Data.Models
         public Int32 TopicId { get; set; }
         public String TopicName { get; set; }
     }
-
 }
