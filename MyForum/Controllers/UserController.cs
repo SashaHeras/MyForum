@@ -41,12 +41,12 @@ namespace MyForum.Controllers.Repository
         [Route("~/User/LoginUser")]
         public IActionResult LoginUser(User user)
         {
-            if (checkExist(user.Email) == false)
+            if (CheckExist(user.Email) == false)
             {
                 return RedirectToRoute(new { controller = "User", action = "Login" });
             }
 
-            if(checkPass(user.Email,user.Password) == false)
+            if(CheckPass(user.Email,user.Password) == false)
             {
                 return RedirectToRoute(new { controller = "User", action = "Login" });
             }
@@ -74,7 +74,7 @@ namespace MyForum.Controllers.Repository
                 return RedirectToRoute(new { controller = "User", action = "Registration" });
             }
 
-            if (checkExist(user.Email) == true)
+            if (CheckExist(user.Email) == true)
             {
                 return RedirectToRoute(new { controller = "User", action = "Registration" });
             }
@@ -110,7 +110,7 @@ namespace MyForum.Controllers.Repository
             return View(obj);
         }
 
-        public bool checkExist(String email)
+        public bool CheckExist(String email)
         {
             if(_users.GetUserNameByEmail(email) == null)
             {
@@ -120,7 +120,7 @@ namespace MyForum.Controllers.Repository
             return true;
         }
 
-        public bool checkPass(String email, String pass)
+        public bool CheckPass(String email, String pass)
         {
             if(_users.GetAll().Where(u=>u.Email.CompareTo(email) == 0).FirstOrDefault().Password.CompareTo(pass) == 0)
             {
