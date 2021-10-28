@@ -56,6 +56,8 @@ namespace MyForum.Controllers
             PostViewModel obj = new PostViewModel();
             obj.GetPostByTopicId = _allPosts.GetPostById(id);
 
+            HttpContext.Session.Set<Post>("post", obj.GetPostByTopicId);
+
             ViewData["UserName"] = _userRepository.GetUserNameById(obj.GetPostByTopicId.UserId);
             ViewBag.Post = obj.GetPostByTopicId;
             return View(obj);

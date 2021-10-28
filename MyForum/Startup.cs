@@ -32,6 +32,7 @@ namespace MyForum
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<ITopicRepository, TopicRepository>();
             services.AddTransient<IPostRepository, PostRepository>();
+            services.AddTransient<IComentRepository, ComentRepository>();
 
             services.AddDistributedMemoryCache();
             services.AddSession();
