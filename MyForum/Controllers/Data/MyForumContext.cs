@@ -15,6 +15,8 @@ namespace MyForum.Controllers.Data
         
         public DbSet<Post> Post { get; set; }
 
+        public DbSet<Coment> Coment { get; set; }
+
         public MyForumContext(DbContextOptions<MyForumContext> options):base(options)
         {
 

@@ -46,7 +46,7 @@ namespace MyForum.Controllers.Repository
                 return RedirectToRoute(new { controller = "User", action = "Login" });
             }
 
-            if(CheckPass(user.Email,user.Password) == false)
+            if(CheckPass(user.Email, user.Password) == false)
             {
                 return RedirectToRoute(new { controller = "User", action = "Login" });
             }
