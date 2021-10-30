@@ -31,6 +31,17 @@ a.cursive-center {
     text-decoration: none;
 }
 
+a.login {
+    color: black;
+}
+
+#profileContext{
+    width: auto;
+    height: auto;
+    background-color: white;
+    margin: 10px;
+}
+
 textarea.desc {
     width: 160px;
     height: 40px;
@@ -54,6 +65,7 @@ textarea.desc {
     margin-bottom: 10px;
     border-radius: 8px;
     background: #FFEFD5;
+    padding-top: 10px;
 }
 
 #main {
@@ -80,7 +92,8 @@ textarea.desc {
     margin-right: 10px;
     border-right: 5px solid #FDF5E6;
     border-radius: 10px;
-    position:fixed;
+    position: fixed;
+    padding-top: 10px;
 }
 
 #rigthSidebar {
@@ -148,6 +161,8 @@ input[type="submit"].wysija-submit {
 .login {
     font-family: cursive;
     font-size: 14px;
+    padding-right: 8px;
+    text-align: left;
 }
 
 .post{

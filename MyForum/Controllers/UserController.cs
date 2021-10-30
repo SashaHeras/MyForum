@@ -9,6 +9,7 @@ using MyForum.Controllers.Interfaces.Repositories;
 using MyForum.Controllers.Data.Models;
 using MyForum.Controllers.Data;
 using MyForum.Controllers.Repository.Repositories;
+using MyForum.Models;
 
 namespace MyForum.Controllers.Repository
 {
@@ -46,7 +47,7 @@ namespace MyForum.Controllers.Repository
                 return RedirectToRoute(new { controller = "User", action = "Login" });
             }
 
-            if(CheckPass(user.Email, user.Password) == false)
+            if (CheckPass(user.Email, user.Password) == false)
             {
                 return RedirectToRoute(new { controller = "User", action = "Login" });
             }
@@ -55,7 +56,9 @@ namespace MyForum.Controllers.Repository
 
             HttpContext.Session.Set<User>("user", user);
 
-            return RedirectToRoute(new { controller = "Home", action = "TopicsList"});
+            ViewBag.UserLogined = user;
+
+            return RedirectToRoute(new { controller = "Home", action = "TopicsList" });
         }
 
         [HttpGet]
@@ -69,7 +72,7 @@ namespace MyForum.Controllers.Repository
         [Route("~/User/RegistrationUser")]
         public IActionResult RegistrationUser(User user)
         {
-            if(user.Email.Length <= 0)
+            if (user.Email.Length <= 0)
             {
                 return RedirectToRoute(new { controller = "User", action = "Registration" });
             }
@@ -101,6 +104,20 @@ namespace MyForum.Controllers.Repository
         }
 
         [HttpGet]
+        [Route("~/User/Profile")]
+        public IActionResult Profile()
+        {
+            if (HttpContext.Session.Keys.Contains("user") != true)
+            {
+                return RedirectToRoute(new { controller = "User", action = "Login" });
+            }
+
+            ViewBag.User = HttpContext.Session.Get<User>("user");
+
+            return View();
+        }
+
+        [HttpGet]
         public IActionResult UsersList()
         {
             UsersListViewModel obj = new UsersListViewModel();
@@ -108,6 +125,54 @@ namespace MyForum.Controllers.Repository
             ViewBag.AllUsers = users;
 
             return View(obj);
+        }
+
+        [HttpGet]
+        [Route("~/User/ChangePass")]
+        public IActionResult ChangePass()
+        {
+            return View();
+        }
+
+        [Route("~/User/SentNewPass")]
+        public IActionResult SentNewPass(ChangePassViewModel pass)
+        {
+            if(pass.oldPass.CompareTo(HttpContext.Session.Get<User>("user").Password) != 0)
+            {
+                return RedirectToRoute(new { controller = "User", action = "ChangePass" });
+            }
+
+            if (pass.newPass.Length <= 8)
+            {
+                return RedirectToRoute(new { controller = "User", action = "ChangePass" });
+            }
+
+            if(pass.newPassConfign.Length <= 8 || pass.newPassConfign.Length != pass.newPass.Length)
+            {
+                return RedirectToRoute(new { controller = "User", action = "ChangePass" });
+            }
+
+            if (pass.newPass.CompareTo(pass.newPassConfign) != 0) 
+            {
+                return RedirectToRoute(new { controller = "User", action = "ChangePass" });
+            }
+
+            if(pass.oldPass.CompareTo(pass.newPass) == 0)
+            {
+                return RedirectToRoute(new { controller = "User", action = "ChangePass" });
+            }
+
+            User user = HttpContext.Session.Get<User>("user");
+
+            user.Password = pass.newPass;
+
+            _context.User.Update(user);
+            _context.SaveChanges();
+
+            HttpContext.Session.Remove("user");
+            HttpContext.Session.Set<User>("user", user);
+
+            return RedirectToRoute(new { controller = "User", action = "Profile" });
         }
 
         public bool CheckExist(String email)
