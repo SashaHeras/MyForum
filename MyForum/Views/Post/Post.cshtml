@@ -7,7 +7,7 @@
         @ViewBag.Post.PostName
     </div>
     <div id="postAuthor">
-        Author: <a href="~/Post/UserPosts/@ViewBag.Post.UserId"> @ViewData["UserName"] </a>
+        Author: <a href="~/Post/UserPosts/@ViewBag.Post.PostUserId"> @ViewBag.Post.PostUserName </a>
     </div>
     </br>
     <div>
@@ -20,6 +20,24 @@
 
 <form asp-action="CreateComent" asp-controller="Coment">
     <div class="form-group">
-        <input type="submit" value="Create" class="btn btn-default" />
+        <input type="submit" value="Create comment" class="btn btn-default" />
     </div>
 </form>
+<br />
+<div>
+    <div>
+        @if (ViewBag.Comments != null)
+        {
+            @foreach (var comment in ViewBag.Comments)
+            {
+                <div id="postDescription">
+                    <div>
+                        Author: <a href="~/Post/UserPosts/@comment.UserId"> @comment.UserName </a>
+                    </div>
+                    @comment.Comment
+                </div>
+                <br />
+            }
+        }
+    </div>
+</div>

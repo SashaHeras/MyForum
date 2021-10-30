@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MyForum.Controllers.Data;
 using MyForum.Controllers.Data.Models;
+using MyForum.Controllers.Dto.Post;
 using MyForum.Controllers.Interfaces.Repositories;
 using MyForum.Controllers.Repository.Repositories;
 using MyForum.ViewModels;
@@ -16,6 +17,7 @@ namespace MyForum.Controllers
         private MyForumContext _context;
         private TopicRepository _topics;
         private UserRepository _userRepository;
+        private ComentRepository _comentRepository;
         private static Int32 _TopicId = -1;
         private readonly IPostRepository _allPosts;
 
@@ -25,6 +27,7 @@ namespace MyForum.Controllers
             _context = context;
             _topics = new TopicRepository(_context);
             _userRepository = new UserRepository(_context);
+            _comentRepository = new ComentRepository(_context);
         }
 
         [Route("~/Post/PostsList/{id?}")]
@@ -56,10 +59,25 @@ namespace MyForum.Controllers
             PostViewModel obj = new PostViewModel();
             obj.GetPostByTopicId = _allPosts.GetPostById(id);
 
-            HttpContext.Session.Set<Post>("post", obj.GetPostByTopicId);
+            FullPost post = new FullPost();
 
-            ViewData["UserName"] = _userRepository.GetUserNameById(obj.GetPostByTopicId.UserId);
-            ViewBag.Post = obj.GetPostByTopicId;
+            post.PostId = obj.GetPostByTopicId.PostId;
+            post.PostName = obj.GetPostByTopicId.PostName;
+            post.Description = obj.GetPostByTopicId.Description;
+            post.PostUserId = obj.GetPostByTopicId.UserId;
+            post.PostTopicId = obj.GetPostByTopicId.TopicId;
+
+            post.PostUserName = _userRepository.GetUserNameById(obj.GetPostByTopicId.UserId);
+
+            if(_comentRepository.GetComentsByPostId(id) != null)
+            {
+                ViewBag.Comments = _comentRepository.GetComentsByPostId(id);
+            }
+
+            HttpContext.Session.Set<FullPost>("fullpost", post);
+
+            ViewBag.Post = HttpContext.Session.Get<FullPost>("fullpost");
+
             return View(obj);
         }
 

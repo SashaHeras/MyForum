@@ -4,16 +4,25 @@
 }
 
 <form asp-action="LoginUser" asp-controller="User">
-    <div class="form-group">
-        <label asp-for="Email" class="control-label">E-mail:</label>
-        <input type="text" asp-for="Email" class="form-control" />
-    </div>
-    </br>
-    <div class="form-group">
-        <label asp-for="Password" class="control-label">Password:</label>
-        <input type="text" asp-for="Password" class="form-control" />
-    </div>
-    </br>
+    <table>
+        <tr>
+            <td class="form-group" style="text-align: right">
+                <label asp-for="Email" class="control-label">E-mail:</label>
+            </td>
+            <td class="form-group" style="padding-left: 8px">
+                <input type="text" asp-for="Email" class="form-control" />
+            </td>
+        </tr>
+        <tr>
+            <td class="form-group" style="text-align: right">
+                <label asp-for="Password" class="control-label">Password: </label>
+            </td>
+            <td class="form-group" style="padding-left: 8px">
+                <input type="text" asp-for="Password" class="form-control" />
+            </td>
+        </tr>
+    </table>
+    <br />
     <table>
         <tr>
             <td>

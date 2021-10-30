@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MyForum.Controllers.Data;
 using MyForum.Controllers.Data.Models;
+using MyForum.Controllers.Dto.Post;
 using MyForum.Controllers.Interfaces.Repositories;
 using MyForum.Controllers.Repository.Repositories;
 using System;
@@ -29,12 +30,25 @@ namespace MyForum.Controllers
 
         public IActionResult CreateComent()
         {
-            ViewBag.Post = HttpContext.Session.Get<Post>("post");
-            ViewData["UserName"] = _userRepository.GetUserNameById(HttpContext.Session.Get<Post>("post").UserId);
+            ViewBag.Post = HttpContext.Session.Get<FullPost>("fullpost");
 
-            ViewBag.UserId = HttpContext.Session.Get<User>("user").Id;
+            ViewBag.User = HttpContext.Session.Get<User>("user");
 
             return View();
+        }
+
+        [Route("~/Coment/Add")]
+        public IActionResult Add(Coment coment)
+        {
+            if(coment.Comment != null && coment.Comment.Length != 0)
+            {
+                _context.Coment.Add(coment);
+                _context.SaveChanges();
+
+                return RedirectToRoute(new { controller = "Post", action = "Post", id = coment.PostId });
+            }
+
+            return RedirectToRoute(new { controller = "Coment", action = "CreateComent"});
         }
     }
 }

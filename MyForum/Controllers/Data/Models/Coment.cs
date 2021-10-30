@@ -10,6 +10,7 @@ namespace MyForum.Controllers.Data.Models
         public Int32 ComentId { get; set; }
         public String Comment { get; set; }
         public Int32 PostId { get; set; }
+        public String UserName { get; set; }
         public Int32 UserId { get; set; }
     }
 }
