@@ -175,6 +175,46 @@ namespace MyForum.Controllers.Repository
             return RedirectToRoute(new { controller = "User", action = "Profile" });
         }
 
+        [HttpGet]
+        [Route("~/User/ChangeOwnData")]
+        public IActionResult ChangeOwnData()
+        {
+            ViewBag.UserData = HttpContext.Session.Get<User>("user");
+
+            return View();
+        }
+
+        [Route("~/User/SentNewData")]
+        public IActionResult SentNewData(EditUserViewModel newUser)
+        {
+            if(newUser.Name.Length == 0 || newUser.Surname.Length == 0 || newUser.Age < 0 || newUser.Email.Length == 0 || newUser.Address.Length == 0)
+            {
+                return RedirectToRoute(new { controller = "User", action = "ChangeData" });
+            }
+
+            if(newUser.Email.Contains('@') == false)
+            {
+                return RedirectToRoute(new { controller = "User", action = "ChangeData" });
+            }
+
+            User user = HttpContext.Session.Get<User>("user");
+
+            user.Name = newUser.Name;
+            user.Surname = newUser.Surname;
+            user.Age = newUser.Age;
+            user.Email = newUser.Email;
+            user.Address = newUser.Address;
+
+            _context.User.Update(user);
+            _context.SaveChanges();
+
+            HttpContext.Session.Remove("user");
+            HttpContext.Session.Set<User>("user", user);
+
+            return RedirectToRoute(new { controller = "User", action = "Profile" });
+        }
+
+
         public bool CheckExist(String email)
         {
             if(_users.GetUserNameByEmail(email) == null)
