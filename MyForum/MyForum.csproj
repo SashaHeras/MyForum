@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.1.0" />
     <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="5.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
@@ -18,6 +19,35 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.18.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Views\Coment\CreateComent.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Home\Privacy.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Home\TopicsList.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Post\CreatePost.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Post\DeletePost.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Post\EditPost.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Post\EditPosts.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Post\Post.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Post\PostsList.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Post\UserPosts.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\Error.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\_Layout.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\_ValidationScriptsPartial.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\User\ChangeOwnData.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\User\ChangePass.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\User\Login.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\User\Profile.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\User\Registration.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\_ViewImports.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\_ViewStart.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MyForum.Business\MyForum.Business.csproj" />
+    <ProjectReference Include="..\MyForum.Core\MyForum.Core.csproj" />
+    <ProjectReference Include="..\MyForum.Data\MyForum.Data.csproj" />
   </ItemGroup>
 
 </Project>

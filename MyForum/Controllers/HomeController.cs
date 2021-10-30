@@ -1,17 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using MyForum.Controllers.Data;
-using MyForum.Controllers.Interfaces.Repositories;
-using MyForum.Controllers.Repository.Repositories;
-using Microsoft.AspNetCore.Http;
-using MyForum.Models;
 using MyForum.ViewModels;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+using MyForum.Core.Interfaces.Repositories;
+using MyForum.Data.Models;
+using MyForum.Data.Repository.Repositories;
 
 namespace MyForum.Controllers
 {
@@ -22,18 +15,18 @@ namespace MyForum.Controllers
         private UserRepository _users;
         private readonly ITopicRepository _allTopics;
 
-        public HomeController(ITopicRepository topics, MyForumContext _context)
+        public HomeController(ITopicRepository topics, MyForumContext context)
         {
-            this._allTopics = topics;
-            this._context = _context;
-            this._topics = new TopicRepository(_context);
-            this._users = new UserRepository(_context);
+            _allTopics = topics;
+            _context = context;
+            _topics = new TopicRepository(context);
+            _users = new UserRepository(context);
         }
 
         [HttpGet]
         public IActionResult TopicsList()
         {
-            TopicsListViewModel topicView = new TopicsListViewModel();
+            TopicsListViewModel topicView = new();
             var topics = _allTopics.GetAll();
 
             ViewBag.AllTopics = topics;

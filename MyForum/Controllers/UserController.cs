@@ -1,25 +1,21 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using Microsoft.AspNetCore.Http;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using MyForum.Core.Interfaces.Repositories;
+using MyForum.Data.Models;
+using MyForum.Data.Repository.Repositories;
+using MyForum.Extensions;
 using MyForum.ViewModels;
-using MyForum.Controllers.Interfaces.Repositories;
-using MyForum.Controllers.Data.Models;
-using MyForum.Controllers.Data;
-using MyForum.Controllers.Repository.Repositories;
-using MyForum.Models;
 
-namespace MyForum.Controllers.Repository
+namespace MyForum.Controllers
 {
     [Route("[controller]/[action]")]
     public class UserController : Controller
     {
         private readonly IUserRepository _allUsers;
-        private MyForumContext _context;
+        private readonly MyForumContext _context;
         private TopicRepository _topics;
-        private UserRepository _users;
+        private readonly UserRepository _users;
 
         public UserController(IUserRepository iAllUsers, MyForumContext context)
         {
@@ -52,9 +48,12 @@ namespace MyForum.Controllers.Repository
                 return RedirectToRoute(new { controller = "User", action = "Login" });
             }
 
-            user = _users.GetAll().Where(u => u.Email.CompareTo(user.Email) == 0 && u.Password.CompareTo(user.Password) == 0).FirstOrDefault();
+            user = _users.GetAll().FirstOrDefault(u => 
+                    string.Compare(u.Email, user.Email, StringComparison.Ordinal) == 0 
+                    && 
+                    string.Compare(u.Password, user.Password, StringComparison.Ordinal) == 0);
 
-            HttpContext.Session.Set<User>("user", user);
+            HttpContext.Session.Set("user", user);
 
             ViewBag.UserLogined = user;
 
@@ -120,7 +119,7 @@ namespace MyForum.Controllers.Repository
         [HttpGet]
         public IActionResult UsersList()
         {
-            UsersListViewModel obj = new UsersListViewModel();
+            UsersListViewModel obj = new();
             var users = _allUsers.GetAll();
             ViewBag.AllUsers = users;
 
@@ -137,7 +136,7 @@ namespace MyForum.Controllers.Repository
         [Route("~/User/SentNewPass")]
         public IActionResult SentNewPass(ChangePassViewModel pass)
         {
-            if(pass.oldPass.CompareTo(HttpContext.Session.Get<User>("user").Password) != 0)
+            if(String.Compare(pass.oldPass, HttpContext.Session.Get<User>("user").Password, StringComparison.Ordinal) != 0)
             {
                 return RedirectToRoute(new { controller = "User", action = "ChangePass" });
             }
@@ -170,7 +169,7 @@ namespace MyForum.Controllers.Repository
             _context.SaveChanges();
 
             HttpContext.Session.Remove("user");
-            HttpContext.Session.Set<User>("user", user);
+            HttpContext.Session.Set("user", user);
 
             return RedirectToRoute(new { controller = "User", action = "Profile" });
         }
@@ -209,13 +208,13 @@ namespace MyForum.Controllers.Repository
             _context.SaveChanges();
 
             HttpContext.Session.Remove("user");
-            HttpContext.Session.Set<User>("user", user);
+            HttpContext.Session.Set("user", user);
 
             return RedirectToRoute(new { controller = "User", action = "Profile" });
         }
 
 
-        public bool CheckExist(String email)
+        public bool CheckExist(string email)
         {
             if(_users.GetUserNameByEmail(email) == null)
             {
@@ -225,7 +224,7 @@ namespace MyForum.Controllers.Repository
             return true;
         }
 
-        public bool CheckPass(String email, String pass)
+        public bool CheckPass(string email, string pass)
         {
             if(_users.GetAll().Where(u=>u.Email.CompareTo(email) == 0).FirstOrDefault().Password.CompareTo(pass) == 0)
             {

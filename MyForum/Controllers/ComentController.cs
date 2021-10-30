@@ -1,19 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MyForum.Controllers.Data;
-using MyForum.Controllers.Data.Models;
-using MyForum.Controllers.Dto.Post;
-using MyForum.Controllers.Interfaces.Repositories;
-using MyForum.Controllers.Repository.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using MyForum.Core.Interfaces.Repositories;
+using MyForum.Data.Dto.Post;
+using MyForum.Data.Models;
+using MyForum.Data.Repository.Repositories;
+using MyForum.Extensions;
 
 namespace MyForum.Controllers
 {
     public class ComentController : Controller
     {
-        private MyForumContext _context;
+        private readonly MyForumContext _context;
         private TopicRepository _topics;
         private PostRepository _postRepository;
         private UserRepository _userRepository;
@@ -21,11 +17,11 @@ namespace MyForum.Controllers
 
         public ComentController(IComentRepository coments, MyForumContext _context)
         {
-            this._comentRepository = coments;
+            _comentRepository = coments;
             this._context = _context;
-            this._topics = new TopicRepository(_context);
-            this._userRepository = new UserRepository(_context);
-            this._postRepository = new PostRepository(_context);
+            _topics = new TopicRepository(_context);
+            _userRepository = new UserRepository(_context);
+            _postRepository = new PostRepository(_context);
         }
 
         public IActionResult CreateComent()
@@ -40,15 +36,14 @@ namespace MyForum.Controllers
         [Route("~/Coment/Add")]
         public IActionResult Add(Coment coment)
         {
-            if(coment.Comment != null && coment.Comment.Length != 0)
-            {
-                _context.Coment.Add(coment);
-                _context.SaveChanges();
+            if (string.IsNullOrEmpty(coment.Comment))
+                return RedirectToRoute(new {controller = "Coment", action = "CreateComent"});
+            
+            _context.Coment.Add(coment);
+            _context.SaveChanges();
 
-                return RedirectToRoute(new { controller = "Post", action = "Post", id = coment.PostId });
-            }
+            return RedirectToRoute(new { controller = "Post", action = "Post", id = coment.PostId });
 
-            return RedirectToRoute(new { controller = "Coment", action = "CreateComent"});
         }
     }
 }

@@ -1,29 +1,26 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MyForum.Controllers.Data;
-using MyForum.Controllers.Data.Models;
-using MyForum.Controllers.Dto.Post;
-using MyForum.Controllers.Interfaces.Repositories;
-using MyForum.Controllers.Repository.Repositories;
 using MyForum.ViewModels;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using MyForum.Core.Interfaces.Repositories;
+using MyForum.Data.Dto.Post;
+using MyForum.Data.Models;
+using MyForum.Data.Repository.Repositories;
+using MyForum.Extensions;
 
 namespace MyForum.Controllers
 {
     public class PostController : Controller
     {
-        private MyForumContext _context;
-        private TopicRepository _topics;
-        private UserRepository _userRepository;
-        private ComentRepository _comentRepository;
-        private static Int32 _TopicId = -1;
-        private readonly IPostRepository _allPosts;
+        private readonly MyForumContext _context;
+        private readonly TopicRepository _topics;
+        private readonly UserRepository _userRepository;
+        private readonly ComentRepository _comentRepository;
+        private static int _TopicId = -1;
+        private readonly IPostRepository _postRepository;
 
         public PostController(IPostRepository postrepos, MyForumContext context)
         {
-            _allPosts = postrepos;
+            _postRepository = postrepos;
             _context = context;
             _topics = new TopicRepository(_context);
             _userRepository = new UserRepository(_context);
@@ -31,10 +28,10 @@ namespace MyForum.Controllers
         }
 
         [Route("~/Post/PostsList/{id?}")]
-        public IActionResult PostsList(Int32 id)
+        public IActionResult PostsList(int id)
         {
-            PostsListViewModel obj = new PostsListViewModel();
-            obj.AllPosts = _allPosts.GetPostsByTopicId(id);
+            PostsListViewModel obj = new();
+            obj.AllPosts = _postRepository.GetPostsByTopicId(id);
 
             ViewData["TopicName"] = _topics.GetTopicNameById(id);
 
@@ -43,9 +40,9 @@ namespace MyForum.Controllers
         }
 
         [Route("~/Post/UserPosts/{id?}")]
-        public IActionResult UserPosts(Int32 id)
+        public IActionResult UserPosts(int id)
         {
-            ViewBag.UserPosts = _allPosts.GetPostsByUserId(id);
+            ViewBag.UserPosts = _postRepository.GetPostsByUserId(id);
 
             ViewBag.UsersName = _userRepository.GetUserById(id).Name;
 
@@ -54,27 +51,26 @@ namespace MyForum.Controllers
 
         [HttpGet]
         [Route("~/Post/Post/{id?}")]
-        public IActionResult Post(Int32 id)
+        public IActionResult Post(int id)
         {
-            PostViewModel obj = new PostViewModel();
-            obj.GetPostByTopicId = _allPosts.GetPostById(id);
+            PostViewModel obj = new() {GetPostByTopicId = _postRepository.GetPostById(id)};
 
-            FullPost post = new FullPost();
-
-            post.PostId = obj.GetPostByTopicId.PostId;
-            post.PostName = obj.GetPostByTopicId.PostName;
-            post.Description = obj.GetPostByTopicId.Description;
-            post.PostUserId = obj.GetPostByTopicId.UserId;
-            post.PostTopicId = obj.GetPostByTopicId.TopicId;
-
-            post.PostUserName = _userRepository.GetUserNameById(obj.GetPostByTopicId.UserId);
+            FullPost post = new()
+            {
+                PostId = obj.GetPostByTopicId.PostId,
+                PostName = obj.GetPostByTopicId.PostName,
+                Description = obj.GetPostByTopicId.Description,
+                PostUserId = obj.GetPostByTopicId.UserId,
+                PostTopicId = obj.GetPostByTopicId.TopicId,
+                PostUserName = _userRepository.GetUserNameById(obj.GetPostByTopicId.UserId)
+            };
 
             if(_comentRepository.GetComentsByPostId(id) != null)
             {
                 ViewBag.Comments = _comentRepository.GetComentsByPostId(id);
             }
 
-            HttpContext.Session.Set<FullPost>("fullpost", post);
+            HttpContext.Session.Set("fullpost", post);
 
             ViewBag.Post = HttpContext.Session.Get<FullPost>("fullpost");
 
@@ -106,16 +102,16 @@ namespace MyForum.Controllers
 
         public IActionResult EditPosts()
         {
-            ViewBag.Posts = _allPosts.GetPostsByTopicId(_topics.GetTopicByName(Request.Form["TopicName"].ToString()).FirstOrDefault().TopicId);
+            ViewBag.Posts = _postRepository.GetPostsByTopicId(_topics.GetTopicByName(Request.Form["TopicName"].ToString()).FirstOrDefault().TopicId);
             ViewData["TopicName"] = Request.Form["TopicName"];
 
             return View();
         }
 
         [Route("~/Post/EditPost/{id?}")]
-        public IActionResult EditPost(Int32 id)
+        public IActionResult EditPost(int id)
         {
-            ViewBag.Post = _allPosts.GetPostById(id);
+            ViewBag.Post = _postRepository.GetPostById(id);
 
             return View();
         }
@@ -136,17 +132,17 @@ namespace MyForum.Controllers
 
         public IActionResult DeletePost()
         {
-            ViewBag.Posts = _allPosts.GetPostsByTopicId(_topics.GetTopicByName(Request.Form["TopicName"].ToString()).FirstOrDefault().TopicId);
+            ViewBag.Posts = _postRepository.GetPostsByTopicId(_topics.GetTopicByName(Request.Form["TopicName"].ToString()).FirstOrDefault().TopicId);
             ViewData["TopicName"] = Request.Form["TopicName"];
 
             return View();
         }
 
         [Route("~/Post/Delete/{id}")]
-        public IActionResult Delete(Int32 id)
+        public IActionResult Delete(int id)
         {
             bool isFind = false;
-            Post post = new Post();
+            Post post = new();
 
             int idInteger = id;
             foreach (var item in _context.Post)
@@ -163,7 +159,7 @@ namespace MyForum.Controllers
 
             if (isFind)
             {
-                topicId = _allPosts.GetPostById(id).TopicId;
+                topicId = _postRepository.GetPostById(id).TopicId;
                 _context.Post.Remove(post);
                 _context.SaveChanges();
             }
