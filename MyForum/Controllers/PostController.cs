@@ -30,6 +30,11 @@ namespace MyForum.Controllers
         [Route("~/Post/PostsList/{id?}")]
         public IActionResult PostsList(int id)
         {
+            if(HttpContext.Session.Keys.Contains("post") == true)
+            {
+                HttpContext.Session.Remove("post");
+            }
+
             PostsListViewModel obj = new();
             obj.AllPosts = _postRepository.GetPostsByTopicId(id);
 
@@ -104,6 +109,7 @@ namespace MyForum.Controllers
         {
             ViewBag.Posts = _postRepository.GetPostsByTopicId(_topics.GetTopicByName(Request.Form["TopicName"].ToString()).FirstOrDefault().TopicId);
             ViewData["TopicName"] = Request.Form["TopicName"];
+            ViewBag.TopicId = _topics.GetTopicByName(Request.Form["TopicName"].ToString()).FirstOrDefault().TopicId;
 
             return View();
         }
@@ -134,6 +140,7 @@ namespace MyForum.Controllers
         {
             ViewBag.Posts = _postRepository.GetPostsByTopicId(_topics.GetTopicByName(Request.Form["TopicName"].ToString()).FirstOrDefault().TopicId);
             ViewData["TopicName"] = Request.Form["TopicName"];
+            ViewBag.TopicId = _topics.GetTopicByName(Request.Form["TopicName"].ToString()).FirstOrDefault().TopicId;
 
             return View();
         }

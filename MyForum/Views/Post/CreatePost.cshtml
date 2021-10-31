@@ -4,6 +4,9 @@
     ViewData["Title"] = "Add post";
 }
 
+<a href="~/Post/PostsList/@ViewBag.TopicId">Go back</a>
+<br />
+
 <form asp-action="Add" asp-controller="Post">
     <div class="form-group">
         <label asp-for="PostName" class="control-label">Post name</label>

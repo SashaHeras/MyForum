@@ -4,6 +4,7 @@
 
 a {
     text-decoration: none;
+    color: black;
 }
 
 td#name{
@@ -73,6 +74,7 @@ textarea.desc {
     padding-top: 15px;
     padding-left: 15px;
     padding-right: 15px;
+    padding-bottom: 15px;
     margin-left: 255px;
     width: auto;
     min-width: 60%;
@@ -124,6 +126,13 @@ textarea.desc {
     background-color: white;
     border-radius: 8px;
     height: auto;
+}
+
+#aContainer {
+    background-color: white;
+    width: auto;
+    height: 24px;
+    border-radius: 8px;
 }
 
 #topicName {

@@ -38,6 +38,11 @@ namespace MyForum.Controllers
         [Route("~/User/LoginUser")]
         public IActionResult LoginUser(User user)
         {
+            if (HttpContext.Session.Keys.Contains("user") == true)
+            {
+                HttpContext.Session.Remove("user");
+            }
+
             if (CheckExist(user.Email) == false)
             {
                 return RedirectToRoute(new { controller = "User", action = "Login" });
@@ -49,9 +54,9 @@ namespace MyForum.Controllers
             }
 
             user = _users.GetAll().FirstOrDefault(u => 
-                    string.Compare(u.Email, user.Email, StringComparison.Ordinal) == 0 
+                    string.Compare(u.Email, user.Email) == 0 
                     && 
-                    string.Compare(u.Password, user.Password, StringComparison.Ordinal) == 0);
+                    string.Compare(u.Password, user.Password) == 0);
 
             HttpContext.Session.Set("user", user);
 

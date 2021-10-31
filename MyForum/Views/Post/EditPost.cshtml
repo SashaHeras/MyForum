@@ -4,6 +4,9 @@
     ViewData["Title"] = "Edit post";
 }
 
+<a href="~/Post/PostsList/@ViewBag.Post.TopicId">Go back</a>
+<br />
+
 <form asp-action="Edit" asp-controller="Post">
     <div class="form-group">
         <input asp-for="PostId" type="hidden" value="@ViewBag.Post.PostId" />
