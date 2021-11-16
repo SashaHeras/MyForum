@@ -81,45 +81,6 @@ namespace MyForum.Controllers
             return View(obj);
         }
 
-        [Route("~/Post/IncreseMark/")]
-        public IActionResult IncreseMark()
-        {
-            return SetMark(true);
-        }
-
-        [Route("~/Post/DegreseMark/")]
-        public IActionResult DegreseMark()
-        {
-            return SetMark(false);
-        }
-
-        public IActionResult SetMark(bool isPositive)
-        {
-            FullPost post = HttpContext.Session.Get<FullPost>("fullpost");
-            User u = HttpContext.Session.Get<User>("user");
-
-            var mark = _markRepository.GetAll().FirstOrDefault(mark => mark.PostId == post.PostId && mark.UserId == u.Id);
-
-            if (mark == null)
-            {
-                UserPostMark m = new()
-                {
-                    UserId = u.Id,
-                    PostId = post.PostId,
-                    PostMark = isPositive == true ? 1 : -1
-                };
-
-                _ = _markRepository.AddAsync(m);
-
-                return RedirectToRoute(new { controller = "Post", action = "Post", id = post.PostId });
-            }
-
-            mark.PostMark = isPositive == true ? 1 : -1;
-
-            _ = _markRepository.UpdateAsync(mark);
-            return RedirectToRoute(new { controller = "Post", action = "Post", id = post.PostId });
-        }
-
         public IActionResult CreatePost()
         {
             ViewBag.TopicId = _topics.GetTopicByName(Request.Form["TopicName"]).FirstOrDefault().TopicId;
