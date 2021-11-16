@@ -185,28 +185,13 @@ namespace MyForum.Controllers
         [Route("~/Post/Delete/{id}")]
         public IActionResult Delete(int id)
         {
-            bool isFind = false;
-            Post post = new();
+            Post post = _postRepository.GetPostById(id);
 
-            int idInteger = id;
-            foreach (var item in _context.Post)
-            {
-                if (item.PostId == idInteger)
-                {
-                    post = item;
-                    isFind = true;
-                    break;
-                }
-            }
+            // Save id of post`s topic to redirect user on the page of all posts after removing
+            int topicId = _postRepository.GetPostById(id).TopicId;
 
-            int topicId = 0;
-
-            if (isFind)
-            {
-                topicId = _postRepository.GetPostById(id).TopicId;
-                _context.Post.Remove(post);
-                _context.SaveChanges();
-            }
+            _context.Post.Remove(post);
+            _context.SaveChanges();
 
             return RedirectToRoute(new { controller = "Post", action = "PostsList", id = topicId });
         }
