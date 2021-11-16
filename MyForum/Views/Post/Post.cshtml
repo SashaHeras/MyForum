@@ -18,10 +18,30 @@
             @ViewBag.Post.Description
         </div>
     </div>
+    <br />
+    <div style="font-family: cursive;">
+        <table>
+            <tr><td>Total mark: @ViewBag.Post.Mark</td></tr>
+            <tr><td>
+                    <form asp-action="IncreseMark" asp-controller="Post">
+                        <input type="submit" value="Like" class="btn btn-default"/>
+                    </form>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <form asp-action="DegreseMark" asp-controller="Post">
+                        <input type="submit" value="Dislike" class="btn btn-default" />
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <br />
 </div>
 <br />
 
-<form asp-action="CreateComent" asp-controller="Coment">
+<form asp-action="CreateComment" asp-controller="Comment">
     <div class="form-group">
         <input type="submit" value="Create comment" class="btn btn-default" />
     </div>
@@ -37,7 +57,7 @@
                     <div>
                         Author: <a href="~/Post/UserPosts/@comment.UserId"> @comment.UserName </a>
                     </div>
-                    @comment.Comment
+                    @comment.CommentText
                 </div>
                 <br />
             }

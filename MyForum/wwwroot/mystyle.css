@@ -130,7 +130,7 @@ textarea.desc {
 
 #aContainer {
     background-color: white;
-    width: auto;
+    width: 160px;
     height: 24px;
     border-radius: 8px;
 }

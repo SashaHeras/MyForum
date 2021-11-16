@@ -7,15 +7,15 @@ using MyForum.Extensions;
 
 namespace MyForum.Controllers
 {
-    public class ComentController : Controller
+    public class CommentController : Controller
     {
         private readonly MyForumContext _context;
         private TopicRepository _topics;
         private PostRepository _postRepository;
         private UserRepository _userRepository;
-        private readonly IComentRepository _comentRepository;
+        private readonly ICommentRepository _comentRepository;
 
-        public ComentController(IComentRepository coments, MyForumContext _context)
+        public CommentController(ICommentRepository coments, MyForumContext _context)
         {
             _comentRepository = coments;
             this._context = _context;
@@ -24,7 +24,8 @@ namespace MyForum.Controllers
             _postRepository = new PostRepository(_context);
         }
 
-        public IActionResult CreateComent()
+        [Route("~/Comment/CreateComment")]
+        public IActionResult CreateComment()
         {
             ViewBag.Post = HttpContext.Session.Get<FullPost>("fullpost");
 
@@ -33,17 +34,16 @@ namespace MyForum.Controllers
             return View();
         }
 
-        [Route("~/Coment/Add")]
-        public IActionResult Add(Coment coment)
+        [Route("~/Comment/Add")]
+        public IActionResult Add(Comment Comment)
         {
-            if (string.IsNullOrEmpty(coment.Comment))
-                return RedirectToRoute(new {controller = "Coment", action = "CreateComent"});
+            if (string.IsNullOrEmpty(Comment.CommentText))
+                return RedirectToRoute(new {controller = "Comment", action = "CreateComment" });
             
-            _context.Coment.Add(coment);
+            _context.Comment.Add(Comment);
             _context.SaveChanges();
 
-            return RedirectToRoute(new { controller = "Post", action = "Post", id = coment.PostId });
-
+            return RedirectToRoute(new { controller = "Post", action = "Post", id = Comment.PostId });
         }
     }
 }

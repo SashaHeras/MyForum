@@ -1,9 +1,9 @@
 ﻿namespace MyForum.Data.Models
 {
-    public class Coment
+    public class Comment
     {
-        public int ComentId { get; set; }
-        public string Comment { get; set; }
+        public int CommentId { get; set; }
+        public string CommentText { get; set; }
         public int PostId { get; set; }
         public string UserName { get; set; }
         public int UserId { get; set; }

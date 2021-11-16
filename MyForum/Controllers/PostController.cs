@@ -6,6 +6,9 @@ using MyForum.Data.Dto.Post;
 using MyForum.Data.Models;
 using MyForum.Data.Repository.Repositories;
 using MyForum.Extensions;
+using MyForum.Core.Models;
+using System;
+using System.Threading.Tasks;
 
 namespace MyForum.Controllers
 {
@@ -14,7 +17,8 @@ namespace MyForum.Controllers
         private readonly MyForumContext _context;
         private readonly TopicRepository _topics;
         private readonly UserRepository _userRepository;
-        private readonly ComentRepository _comentRepository;
+        private readonly CommentRepository _comentRepository;
+        private readonly MarkRepository _markRepository;
         private static int _TopicId = -1;
         private readonly IPostRepository _postRepository;
 
@@ -24,7 +28,8 @@ namespace MyForum.Controllers
             _context = context;
             _topics = new TopicRepository(_context);
             _userRepository = new UserRepository(_context);
-            _comentRepository = new ComentRepository(_context);
+            _comentRepository = new CommentRepository(_context);
+            _markRepository = new MarkRepository(_context);
         }
 
         [Route("~/Post/PostsList/{id?}")]
@@ -41,6 +46,7 @@ namespace MyForum.Controllers
             ViewData["TopicName"] = _topics.GetTopicNameById(id);
 
             ViewBag.Posts = obj.AllPosts;
+
             return View(obj);
         }
 
@@ -60,26 +66,58 @@ namespace MyForum.Controllers
         {
             PostViewModel obj = new() {GetPostByTopicId = _postRepository.GetPostById(id)};
 
-            FullPost post = new()
-            {
-                PostId = obj.GetPostByTopicId.PostId,
-                PostName = obj.GetPostByTopicId.PostName,
-                Description = obj.GetPostByTopicId.Description,
-                PostUserId = obj.GetPostByTopicId.UserId,
-                PostTopicId = obj.GetPostByTopicId.TopicId,
-                PostUserName = _userRepository.GetUserNameById(obj.GetPostByTopicId.UserId)
-            };
+            FullPost post = new FullPost(obj.GetPostByTopicId.PostId, obj.GetPostByTopicId.PostName, obj.GetPostByTopicId.Description, obj.GetPostByTopicId.UserId, obj.GetPostByTopicId.TopicId, _userRepository.GetUserNameById(obj.GetPostByTopicId.UserId), (int)_markRepository.GetAll().Where(mark => mark.PostId == obj.GetPostByTopicId.PostId).Sum(mark => mark.PostMark));
 
-            if(_comentRepository.GetComentsByPostId(id) != null)
+            if(_comentRepository.GetCommentsByPostId(id) != null)
             {
-                ViewBag.Comments = _comentRepository.GetComentsByPostId(id);
+                ViewBag.Comments = _comentRepository.GetCommentsByPostId(id);
             }
 
             HttpContext.Session.Set("fullpost", post);
 
             ViewBag.Post = HttpContext.Session.Get<FullPost>("fullpost");
+            ViewBag.User = HttpContext.Session.Get<User>("user");
 
             return View(obj);
+        }
+
+        [Route("~/Post/IncreseMark/")]
+        public IActionResult IncreseMark()
+        {
+            return SetMark(true);
+        }
+
+        [Route("~/Post/DegreseMark/")]
+        public IActionResult DegreseMark()
+        {
+            return SetMark(false);
+        }
+
+        public IActionResult SetMark(bool isPositive)
+        {
+            FullPost post = HttpContext.Session.Get<FullPost>("fullpost");
+            User u = HttpContext.Session.Get<User>("user");
+
+            var mark = _markRepository.GetAll().FirstOrDefault(mark => mark.PostId == post.PostId && mark.UserId == u.Id);
+
+            if (mark == null)
+            {
+                UserPostMark m = new()
+                {
+                    UserId = u.Id,
+                    PostId = post.PostId,
+                    PostMark = isPositive == true ? 1 : -1
+                };
+
+                _ = _markRepository.AddAsync(m);
+
+                return RedirectToRoute(new { controller = "Post", action = "Post", id = post.PostId });
+            }
+
+            mark.PostMark = isPositive == true ? 1 : -1;
+
+            _ = _markRepository.UpdateAsync(mark);
+            return RedirectToRoute(new { controller = "Post", action = "Post", id = post.PostId });
         }
 
         public IActionResult CreatePost()
@@ -96,8 +134,7 @@ namespace MyForum.Controllers
         {
             if(post.Description != null && post.PostName != null)
             {
-                _context.Post.Add(post);
-                _context.SaveChanges();
+                _postRepository.AddAsync(post);
 
                 return RedirectToRoute(new { controller = "Post", action = "PostsList", id = post.TopicId });
             }

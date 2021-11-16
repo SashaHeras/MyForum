@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MyForum.Core.Models;
 
 namespace MyForum.Data.Models
 {
@@ -10,7 +11,9 @@ namespace MyForum.Data.Models
         
         public DbSet<Post> Post { get; set; }
 
-        public DbSet<Coment> Coment { get; set; }
+        public DbSet<Comment> Comment { get; set; }
+
+        public DbSet<UserPostMark> Mark { get; set; }
 
         public MyForumContext(DbContextOptions<MyForumContext> options):base(options)
         {
