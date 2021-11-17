@@ -10,7 +10,7 @@
         @ViewBag.Post.PostName
     </div>
     <div id="postAuthor">
-        Author: <a href="~/Post/UserPosts/@ViewBag.Post.PostUserId"> @ViewBag.Post.PostUserName </a>
+        Author: <a href="~/User/UserPosts/@ViewBag.Post.PostUserId"> @ViewBag.Post.PostUserName </a>
     </div>
     <br />
     <div>
@@ -55,7 +55,7 @@
             {
                 <div id="postDescription">
                     <div>
-                        Author: <a href="~/Post/UserPosts/@comment.UserId"> @comment.UserName </a>
+                        Author: <a href="~/User/UserPosts/@comment.UserId"> @comment.UserName </a>
                     </div>
                     @comment.CommentText
                 </div>

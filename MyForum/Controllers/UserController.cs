@@ -13,16 +13,20 @@ namespace MyForum.Controllers
     public class UserController : Controller
     {
         private readonly IUserRepository _allUsers;
-        private readonly MyForumContext _context;
+        private MyForumContext _context;
+        private PostRepository _postRepository;
         private TopicRepository _topics;
-        private readonly UserRepository _users;
+        private MarkRepository _markRepository;
+        private readonly UserRepository _userRepository;
 
         public UserController(IUserRepository iAllUsers, MyForumContext context)
         {
             _allUsers = iAllUsers;
             _context = context;
             _topics = new TopicRepository(_context);
-            _users = new UserRepository(_context);
+            _userRepository = new UserRepository(_context);
+            _postRepository = new PostRepository(_context);
+            _markRepository = new MarkRepository(_context);
         }
 
         // Метод перехода на страницу для входа
@@ -53,7 +57,7 @@ namespace MyForum.Controllers
                 return RedirectToRoute(new { controller = "User", action = "Login" });
             }
 
-            user = _users.GetAll().FirstOrDefault(u => 
+            user = _userRepository.GetAll().FirstOrDefault(u => 
                     string.Compare(u.Email, user.Email) == 0 
                     && 
                     string.Compare(u.Password, user.Password) == 0);
@@ -218,10 +222,38 @@ namespace MyForum.Controllers
             return RedirectToRoute(new { controller = "User", action = "Profile" });
         }
 
+        [Route("~/User/UserPosts/{id?}")]
+        public IActionResult UserPosts(int id)
+        {
+            ViewBag.UserPosts = _postRepository.GetPostsByUserId(id);
+
+            ViewBag.UsersName = _userRepository.GetUserById(id).Name;
+
+            ViewBag.AverageMark = averageMark(id);
+
+            return View();
+        }
+
+        private float averageMark(int id)
+        {
+            int postsCount = _postRepository.GetPostsByUserId(id).Count();
+            int allSum = 0;
+
+            var posts = _postRepository.GetPostsByUserId(id);
+
+            foreach (var i in posts)
+            {
+                allSum += _markRepository.GetPostMark(i.PostId);
+            }
+
+            float average = allSum / postsCount;
+
+            return average;
+        }
 
         public bool CheckExist(string email)
         {
-            if(_users.GetUserNameByEmail(email) == null)
+            if(_userRepository.GetUserNameByEmail(email) == null)
             {
                 return false;
             }
@@ -231,7 +263,7 @@ namespace MyForum.Controllers
 
         public bool CheckPass(string email, string pass)
         {
-            if(_users.GetAll().Where(u=>u.Email.CompareTo(email) == 0).FirstOrDefault().Password.CompareTo(pass) == 0)
+            if (_userRepository.GetAll().Where(u => u.Email.CompareTo(email) == 0).FirstOrDefault().Password.CompareTo(pass) == 0) 
             {
                 return true;
             }

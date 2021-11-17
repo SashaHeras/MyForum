@@ -50,16 +50,6 @@ namespace MyForum.Controllers
             return View(obj);
         }
 
-        [Route("~/Post/UserPosts/{id?}")]
-        public IActionResult UserPosts(int id)
-        {
-            ViewBag.UserPosts = _postRepository.GetPostsByUserId(id);
-
-            ViewBag.UsersName = _userRepository.GetUserById(id).Name;
-
-            return View();
-        }
-
         [HttpGet]
         [Route("~/Post/Post/{id?}")]
         public IActionResult Post(int id)
