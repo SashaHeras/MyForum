@@ -26,9 +26,14 @@ namespace MyForum.Data.Repository.Repositories
             return GetAll().Where(m => m.PostId == id);
         }
 
-        public UserPostMark GetMarkByUserAndPostId(int ui,int pi)
+        public UserPostMark GetMarkByUserAndPostId(int ui, int pi)
         {
             return GetAll().Where(m => m.UserId == ui && m.PostId == pi).FirstOrDefault();
+        }
+
+        public int GetPostMark(int id)
+        {
+            return GetAll().Where(p => p.PostId == id).Sum(m => m.PostMark);
         }
 
         public UserPostMark GetUsersMarkById(int id)
