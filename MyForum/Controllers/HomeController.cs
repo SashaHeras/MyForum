@@ -5,6 +5,7 @@ using System;
 using MyForum.Core.Interfaces.Repositories;
 using MyForum.Data.Models;
 using MyForum.Data.Repository.Repositories;
+using MyForum.Extensions;
 
 namespace MyForum.Controllers
 {
@@ -26,11 +27,17 @@ namespace MyForum.Controllers
         [HttpGet]
         public IActionResult TopicsList()
         {
-            TopicsListViewModel topicView = new();
-            var topics = _allTopics.GetAll();
+            if(HttpContext.Session.Get<User>("user") != null)
+            {
+                TopicsListViewModel topicView = new();
+                var topics = _allTopics.GetAll();
 
-            ViewBag.AllTopics = topics;
-            return View(topicView);
+                ViewBag.AllTopics = topics;
+
+                return View(topicView);
+            }
+
+            return RedirectToRoute(new { controller = "User", action = "Login" });
         } 
 
         // POST: HomeController/Create

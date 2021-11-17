@@ -7,6 +7,14 @@ a {
     color: black;
 }
 
+a:visited {
+    color: #DC143C;
+}
+
+a:active {
+    color: #FF7F50;
+}
+
 td#name{
     text-align: center;
     padding-left: 600px;
