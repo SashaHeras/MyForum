@@ -1,6 +1,6 @@
 ﻿@model MyForum.Data.Models.User
 @{
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_LoginLayout.cshtml";
 }
 
 <form asp-action="LoginUser" asp-controller="User">
@@ -25,14 +25,12 @@
     <br />
     <table>
         <tr>
-            <td>
+            <td style="margin:5px">
                 <div class="form-group" style="margin: 5px">
-                    <input type="submit" style="width: 100px" value="Log in" class="btn btn-default" />
+                    <input type="submit" style="width: 100px" value="Log in" class="btn btn-success" />
                 </div>
             </td>
-        </tr>
-        <tr>
-            <td>
+            <td style="margin:5px">
                 <div style="margin: 5px">
                     <a href="~/User/Registration">You haven`t acount?</a>
                 </div>

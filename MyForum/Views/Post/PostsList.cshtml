@@ -41,15 +41,5 @@
             </td>
         </tr>
         <br />
-        <tr>
-            <td>
-                @using (Html.BeginForm("EditPosts", "Post", FormMethod.Post))
-                {
-                    <input type="hidden" name="TopicName" value=@ViewData["TopicName"]>
-                    <input type="submit" value="Edit post" />
-                    <br>
-                }
-            </td>
-        </tr>
     </table>
 }

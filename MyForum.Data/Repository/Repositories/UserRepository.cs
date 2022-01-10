@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using MyForum.Core.Interfaces.Infrastructure;
 using MyForum.Core.Interfaces.Repositories;
 using MyForum.Data.Models;
 

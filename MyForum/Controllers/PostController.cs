@@ -105,7 +105,7 @@ namespace MyForum.Controllers
         [Route("~/Post/EditPost/{id?}")]
         public IActionResult EditPost(int id)
         {
-            ViewBag.Post = _postRepository.GetPostById(id);
+            ViewBag.Post = _postRepository.GetPostById(Convert.ToInt32(Request.Form["PostId"]));
 
             return View();
         }
