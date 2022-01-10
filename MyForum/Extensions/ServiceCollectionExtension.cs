@@ -66,8 +66,12 @@ namespace MyForum.Extensions
 
         public static ContainerBuilder UseAllOfType<T>(this ContainerBuilder serviceCollection, Assembly[] assemblies, ServiceLifetime lifetime = ServiceLifetime.Scoped)
         {
-            var typesFromAssemblies = assemblies.SelectMany(a => a.DefinedTypes.Where(x => x.IsClass && x.GetInterfaces().Contains(typeof(T))));
+            var typesFromAssemblies = 
+                assemblies
+                .SelectMany(a => a.DefinedTypes
+                .Where(x => x.IsClass && x.GetInterfaces().Contains(typeof(T))));
 
+            
             foreach (var type in typesFromAssemblies)
             {
                 var it = type.GetInterfaces();

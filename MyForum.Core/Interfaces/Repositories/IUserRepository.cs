@@ -3,7 +3,7 @@ using MyForum.Data.Models;
 
 namespace MyForum.Core.Interfaces.Repositories
 {
-    public interface IUserRepository : ITransientService, IRepository<User>
+    public interface IUserRepository : ISingletonService, IRepository<User>
     {
         public User GetUserById(int id);
 

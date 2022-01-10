@@ -24,14 +24,14 @@
             <tr><td>Total mark: @ViewBag.Post.Mark</td></tr>
             <tr><td>
                     <form asp-action="IncreseMark" asp-controller="Mark">
-                        <input type="submit" value="Like" class="btn btn-default"/>
+                        <input style="border-radius: 8px" type="submit" value="Like" class="btn btn-default"/>
                     </form>
                 </td>
             </tr>
             <tr>
                 <td>
                     <form asp-action="DegreseMark" asp-controller="Mark">
-                        <input type="submit" value="Dislike" class="btn btn-default" />
+                        <input style="border-radius: 8px" type="submit" value="Dislike" class="btn btn-default" />
                     </form>
                 </td>
             </tr>
@@ -57,7 +57,7 @@
                     <div>
                         Author: <a href="~/User/UserPosts/@comment.UserId"> @comment.UserName </a>
                     </div>
-                    @comment.CommentText
+                    <p>@comment.CommentText</p>
                 </div>
                 <br />
             }

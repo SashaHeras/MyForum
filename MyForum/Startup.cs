@@ -48,7 +48,11 @@ namespace MyForum
             services.AddHttpClient();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            
+            services.AddSingleton<IMarkRepository, MarkRepository>();
+            services.AddSingleton<IPostRepository, PostRepository>();
+            services.AddSingleton<ITopicRepository, TopicRepository>();
+            services.AddSingleton<ICommentRepository, CommentRepository>();
+
             services.AddHttpContextAccessor();
             
             services.AddLongRunningTasks();
@@ -64,7 +68,6 @@ namespace MyForum
                 options.EnableForHttps = true;
             });
 
-          
             services.AddDistributedMemoryCache();
             services.AddSession();
             
@@ -73,13 +76,14 @@ namespace MyForum
                 sqlServerDbContextOptionsBuilder => 
                     sqlServerDbContextOptionsBuilder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null)));
 
-
             services.AddControllersWithViews();
         }
+
         public void ConfigureContainer(ContainerBuilder builder)
         {
             builder.RegisterAllServices();
         }
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -103,9 +107,6 @@ namespace MyForum
             app.UseResponseCaching();
             app.UseResponseCompression();
 
-
-           
-            
             app.UseEndpoints(endpoints =>
             {                
                 endpoints.MapControllers();
