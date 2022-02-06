@@ -31,5 +31,7 @@ namespace MyForum.Data.Models
         [Required]
         [Display(Name = "Address")]
         public string Address { get; set; }
+
+        public byte[] Picture { get; set; }
     }
 }

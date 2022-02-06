@@ -3,13 +3,16 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Web;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyForum.Core.Interfaces.Repositories;
 using MyForum.Data.Models;
 using MyForum.Data.Repository.Repositories;
 using MyForum.Extensions;
 using MyForum.ViewModels;
+using MyForum.Core.Models;
 
 namespace MyForum.Controllers
 {
@@ -133,6 +136,22 @@ namespace MyForum.Controllers
                 return RedirectToRoute(new { controller = "User", action = "Login" });
             }
 
+            if(HttpContext.Session.Get<User>("user").Picture == null)
+            {
+                string imagepath = @"C:\Users\User\source\repos\MyForum\MyForum\wwwroot\images\default.png";
+                FileStream fs = new FileStream(imagepath, FileMode.Open);
+                byte[] byData = new byte[fs.Length];
+                fs.Read(byData, 0, byData.Length);
+
+                var base64 = Convert.ToBase64String(byData);
+                ViewBag.Picture = String.Format("data:image/jpg;base64,{0}", base64);
+            }
+            else
+            {
+                var base64 = Convert.ToBase64String(HttpContext.Session.Get<User>("user").Picture);
+                ViewBag.Picture = String.Format("data:image/jpg;base64,{0}", base64);
+            }
+
             ViewBag.User = HttpContext.Session.Get<User>("user");
 
             return View();
@@ -192,6 +211,34 @@ namespace MyForum.Controllers
 
             HttpContext.Session.Remove("user");
             HttpContext.Session.Set("user", user);
+
+            return RedirectToRoute(new { controller = "User", action = "Profile" });
+        }
+
+        [HttpPost]
+        public ActionResult AddPicture(Picture pic, IFormFile uploadImage)
+        {
+            if (ModelState.IsValid && uploadImage != null)
+            {
+                byte[] imageData = null;
+
+                using (var binaryReader = new BinaryReader(uploadImage.OpenReadStream()))
+                {
+                    long f = uploadImage.Length;
+                    int c = Convert.ToInt32(uploadImage.Length);
+                    imageData = binaryReader.ReadBytes(c);
+                }
+
+                User u = HttpContext.Session.Get<User>("user");
+                u.Picture = imageData;
+
+                _context.User.Update(u);
+                _context.SaveChanges();
+
+                HttpContext.Session.Set<User>("user", u);
+
+                return RedirectToRoute(new { controller = "User", action = "Profile" });
+            }
 
             return RedirectToRoute(new { controller = "User", action = "Profile" });
         }
