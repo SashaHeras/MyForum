@@ -28,6 +28,13 @@
             <br>
         }
         <br />
+        @using (Html.BeginForm("Delete", "Post", FormMethod.Post))
+        {
+            <input type="hidden" name="PostId" value=@ViewBag.Post.PostId>
+            <input type="submit" value="Delete post" />
+            <br>
+        }
+        <br />
     }
     <div style="font-family: cursive;">
         <table>

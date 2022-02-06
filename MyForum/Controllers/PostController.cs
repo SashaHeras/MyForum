@@ -105,15 +105,36 @@ namespace MyForum.Controllers
         [Route("~/Post/EditPost/{id?}")]
         public IActionResult EditPost(int id)
         {
-            ViewBag.Post = _postRepository.GetPostById(Convert.ToInt32(Request.Form["PostId"]));
+            if (id == 0)
+            {
+                ViewBag.Post = _postRepository.GetPostById(Convert.ToInt32(Request.Form["PostId"]));
+            }
+            else
+            {
+                ViewBag.Post = _postRepository.GetPostById(id);
+            }
 
             return View();
         }
 
         [Route("~/Post/Edit")]
-        public IActionResult Edit(Post post)
+        public IActionResult EditPost(Post post)
         {
-            if(post.Description != null && post.PostName != null)
+            if(string.IsNullOrEmpty(post.Description))
+            {
+                ModelState.AddModelError("Description", "Uncorrect discription!");
+
+                ViewBag.Post = post;
+            }
+
+            if (string.IsNullOrEmpty(post.PostName))
+            {
+                ModelState.AddModelError("PostName", "Uncorrect post name!");
+
+                ViewBag.Post = post;
+            }
+
+            if (ModelState.IsValid)
             {
                 _context.Post.Update(post);
                 _context.SaveChanges();
@@ -121,7 +142,7 @@ namespace MyForum.Controllers
                 return RedirectToRoute(new { controller = "Post", action = "PostsList", id = post.TopicId });
             }
 
-            return RedirectToRoute(new { controller = "Post", action = "PostsList", id = post.TopicId });
+            return View();
         }
 
         public IActionResult DeletePost()
@@ -136,10 +157,23 @@ namespace MyForum.Controllers
         [Route("~/Post/Delete/{id}")]
         public IActionResult Delete(int id)
         {
-            Post post = _postRepository.GetPostById(id);
+            Post post = _postRepository.GetPostById(Convert.ToInt32(Request.Form["PostId"]));
 
             // Save id of post`s topic to redirect user on the page of all posts after removing
-            int topicId = _postRepository.GetPostById(id).TopicId;
+            int topicId = _postRepository.GetPostById(Convert.ToInt32(Request.Form["PostId"])).TopicId;
+
+            _context.Post.Remove(post);
+            _context.SaveChanges();
+
+            return RedirectToRoute(new { controller = "Post", action = "PostsList", id = topicId });
+        }
+
+        public IActionResult Delete()
+        {
+            Post post = _postRepository.GetPostById(Convert.ToInt32(Request.Form["PostId"]));
+
+            // Save id of post`s topic to redirect user on the page of all posts after removing
+            int topicId = _postRepository.GetPostById(Convert.ToInt32(Request.Form["PostId"])).TopicId;
 
             _context.Post.Remove(post);
             _context.SaveChanges();

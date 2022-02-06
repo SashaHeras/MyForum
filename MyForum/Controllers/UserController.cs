@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
 using MyForum.Core.Interfaces.Repositories;
 using MyForum.Data.Models;
@@ -47,13 +51,22 @@ namespace MyForum.Controllers
                 HttpContext.Session.Remove("user");
             }
 
+            if(!Regex.IsMatch(user.Email,@"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}"))
+            {
+                ModelState.AddModelError("Email", "Uncorrect email");
+
+                return RedirectToRoute(new { controller = "User", action = "Login" });
+            }
+
             if (CheckExist(user.Email) == false)
             {
                 return RedirectToRoute(new { controller = "User", action = "Login" });
             }
 
-            if (CheckPass(user.Email, user.Password) == false)
+            if (CheckPass(user.Email, user.Password) == false || user.Password == null)
             {
+                ModelState.AddModelError("Password", "Uncorrect password");
+
                 return RedirectToRoute(new { controller = "User", action = "Login" });
             }
 

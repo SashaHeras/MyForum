@@ -30,16 +30,5 @@
             </td>
         </tr>
         <br />
-        <tr>
-            <td>
-                @using (Html.BeginForm("DeletePost", "Post", FormMethod.Post))
-                {
-                    <input type="hidden" name="TopicName" value=@ViewData["TopicName"]>
-                    <input type="submit" value="Delete post" />
-                    <br>
-                }
-            </td>
-        </tr>
-        <br />
     </table>
 }

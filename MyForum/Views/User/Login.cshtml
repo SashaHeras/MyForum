@@ -11,6 +11,7 @@
             </td>
             <td class="form-group" style="padding-left: 8px">
                 <input type="text" asp-for="Email" class="form-control" />
+                @Html.ValidationMessageFor(model => model.Email)
             </td>
         </tr>
         <tr>
@@ -19,6 +20,7 @@
             </td>
             <td class="form-group" style="padding-left: 8px">
                 <input type="text" asp-for="Password" class="form-control" />
+                @Html.ValidationMessageFor(model => model.Password)
             </td>
         </tr>
     </table>
