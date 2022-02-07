@@ -30,7 +30,6 @@
     <_ContentIncludedByDefault Remove="Views\Post\CreatePost.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Post\DeletePost.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Post\EditPost.cshtml" />
-    <_ContentIncludedByDefault Remove="Views\Post\EditPosts.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Post\Post.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Post\PostsList.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Post\UserPosts.cshtml" />
