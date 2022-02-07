@@ -38,21 +38,24 @@ namespace MyForum.Controllers
             }
 
             return RedirectToRoute(new { controller = "User", action = "Login" });
-        } 
+        }
 
-        // POST: HomeController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        [Route("~/Home/CreateTopic")]
+        public IActionResult CreateTopic()
         {
-            try
+            return View();
+        }
+
+        public IActionResult Create(Topic topic)
+        {
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                _topics.AddAsync(topic);
+
+                return RedirectToRoute(new { controller = "Home", action = "TopicsList" });
             }
-            catch
-            {
-                return View();
-            }
+
+            return RedirectToRoute(new { controller = "Home", action = "CreateTopic" });
         }
 
         // GET: HomeController/Edit/5
