@@ -12,4 +12,10 @@
         </a>
         <br><br>
     }
+
+    @using (Html.BeginForm("CreateTopic", "Home", FormMethod.Post))
+    {
+        <input type="submit" value="Create new topic" />
+        <br>
+    }          
 }

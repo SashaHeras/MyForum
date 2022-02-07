@@ -1,31 +1,39 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Web;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using MyForum.Core.Interfaces.Repositories;
+using MyForum.Data.Models;
+using MyForum.Data.Repository.Repositories;
+using MyForum.Extensions;
 using MyForum.ViewModels;
-using MyForum.Controllers.Interfaces.Repositories;
-using MyForum.Controllers.Data.Models;
-using MyForum.Controllers.Data;
-using MyForum.Controllers.Repository.Repositories;
+using MyForum.Core.Models;
 
-namespace MyForum.Controllers.Repository
+namespace MyForum.Controllers
 {
     [Route("[controller]/[action]")]
     public class UserController : Controller
     {
         private readonly IUserRepository _allUsers;
         private MyForumContext _context;
+        private PostRepository _postRepository;
         private TopicRepository _topics;
-        private UserRepository _users;
+        private MarkRepository _markRepository;
+        private readonly UserRepository _userRepository;
 
         public UserController(IUserRepository iAllUsers, MyForumContext context)
         {
             _allUsers = iAllUsers;
             _context = context;
             _topics = new TopicRepository(_context);
-            _users = new UserRepository(_context);
+            _userRepository = new UserRepository(_context);
+            _postRepository = new PostRepository(_context);
+            _markRepository = new MarkRepository(_context);
         }
 
         // Метод перехода на страницу для входа
@@ -41,21 +49,40 @@ namespace MyForum.Controllers.Repository
         [Route("~/User/LoginUser")]
         public IActionResult LoginUser(User user)
         {
-            if (checkExist(user.Email) == false)
+            if (HttpContext.Session.Keys.Contains("user") == true)
+            {
+                HttpContext.Session.Remove("user");
+            }
+
+            if(!Regex.IsMatch(user.Email,@"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}"))
+            {
+                ModelState.AddModelError("Email", "Uncorrect email");
+
+                return RedirectToRoute(new { controller = "User", action = "Login" });
+            }
+
+            if (CheckExist(user.Email) == false)
             {
                 return RedirectToRoute(new { controller = "User", action = "Login" });
             }
 
-            if(checkPass(user.Email,user.Password) == false)
+            if (CheckPass(user.Email, user.Password) == false || user.Password == null)
             {
+                ModelState.AddModelError("Password", "Uncorrect password");
+
                 return RedirectToRoute(new { controller = "User", action = "Login" });
             }
 
-            user = _users.GetAll().Where(u => u.Email.CompareTo(user.Email) == 0 && u.Password.CompareTo(user.Password) == 0).FirstOrDefault();
+            user = _userRepository.GetAll().FirstOrDefault(u => 
+                    string.Compare(u.Email, user.Email) == 0 
+                    && 
+                    string.Compare(u.Password, user.Password) == 0);
 
-            HttpContext.Session.Set<User>("user", user);
+            HttpContext.Session.Set("user", user);
 
-            return RedirectToRoute(new { controller = "Home", action = "TopicsList"});
+            ViewBag.UserLogined = user;
+
+            return RedirectToRoute(new { controller = "Home", action = "TopicsList" });
         }
 
         [HttpGet]
@@ -69,12 +96,12 @@ namespace MyForum.Controllers.Repository
         [Route("~/User/RegistrationUser")]
         public IActionResult RegistrationUser(User user)
         {
-            if(user.Email.Length <= 0)
+            if (user.Email.Length <= 0)
             {
                 return RedirectToRoute(new { controller = "User", action = "Registration" });
             }
 
-            if (checkExist(user.Email) == true)
+            if (CheckExist(user.Email) == true)
             {
                 return RedirectToRoute(new { controller = "User", action = "Registration" });
             }
@@ -101,18 +128,192 @@ namespace MyForum.Controllers.Repository
         }
 
         [HttpGet]
+        [Route("~/User/Profile")]
+        public IActionResult Profile()
+        {
+            if (HttpContext.Session.Keys.Contains("user") != true)
+            {
+                return RedirectToRoute(new { controller = "User", action = "Login" });
+            }
+
+            if(HttpContext.Session.Get<User>("user").Picture == null)
+            {
+                string imagepath = @"C:\Users\User\source\repos\MyForum\MyForum\wwwroot\images\default.png";
+                FileStream fs = new FileStream(imagepath, FileMode.Open);
+                byte[] byData = new byte[fs.Length];
+                fs.Read(byData, 0, byData.Length);
+
+                var base64 = Convert.ToBase64String(byData);
+                ViewBag.Picture = String.Format("data:image/jpg;base64,{0}", base64);
+            }
+            else
+            {
+                var base64 = Convert.ToBase64String(HttpContext.Session.Get<User>("user").Picture);
+                ViewBag.Picture = String.Format("data:image/jpg;base64,{0}", base64);
+            }
+
+            ViewBag.User = HttpContext.Session.Get<User>("user");
+
+            return View();
+        }
+
+        [HttpGet]
         public IActionResult UsersList()
         {
-            UsersListViewModel obj = new UsersListViewModel();
+            UsersListViewModel obj = new();
             var users = _allUsers.GetAll();
             ViewBag.AllUsers = users;
 
             return View(obj);
         }
 
-        public bool checkExist(String email)
+        [HttpGet]
+        [Route("~/User/ChangePass")]
+        public IActionResult ChangePass()
         {
-            if(_users.GetUserNameByEmail(email) == null)
+            return View();
+        }
+
+        [Route("~/User/SentNewPass")]
+        public IActionResult SentNewPass(ChangePassViewModel pass)
+        {
+            if(String.Compare(pass.oldPass, HttpContext.Session.Get<User>("user").Password, StringComparison.Ordinal) != 0)
+            {
+                return RedirectToRoute(new { controller = "User", action = "ChangePass" });
+            }
+
+            if (pass.newPass.Length <= 8)
+            {
+                return RedirectToRoute(new { controller = "User", action = "ChangePass" });
+            }
+
+            if(pass.newPassConfign.Length <= 8 || pass.newPassConfign.Length != pass.newPass.Length)
+            {
+                return RedirectToRoute(new { controller = "User", action = "ChangePass" });
+            }
+
+            if (pass.newPass.CompareTo(pass.newPassConfign) != 0) 
+            {
+                return RedirectToRoute(new { controller = "User", action = "ChangePass" });
+            }
+
+            if(pass.oldPass.CompareTo(pass.newPass) == 0)
+            {
+                return RedirectToRoute(new { controller = "User", action = "ChangePass" });
+            }
+
+            User user = HttpContext.Session.Get<User>("user");
+
+            user.Password = pass.newPass;
+
+            _context.User.Update(user);
+            _context.SaveChanges();
+
+            HttpContext.Session.Remove("user");
+            HttpContext.Session.Set("user", user);
+
+            return RedirectToRoute(new { controller = "User", action = "Profile" });
+        }
+
+        [HttpPost]
+        public ActionResult AddPicture(Picture pic, IFormFile uploadImage)
+        {
+            if (ModelState.IsValid && uploadImage != null)
+            {
+                byte[] imageData = null;
+
+                using (var binaryReader = new BinaryReader(uploadImage.OpenReadStream()))
+                {
+                    long f = uploadImage.Length;
+                    int c = Convert.ToInt32(uploadImage.Length);
+                    imageData = binaryReader.ReadBytes(c);
+                }
+
+                User u = HttpContext.Session.Get<User>("user");
+                u.Picture = imageData;
+
+                _context.User.Update(u);
+                _context.SaveChanges();
+
+                HttpContext.Session.Set<User>("user", u);
+
+                return RedirectToRoute(new { controller = "User", action = "Profile" });
+            }
+
+            return RedirectToRoute(new { controller = "User", action = "Profile" });
+        }
+
+        [HttpGet]
+        [Route("~/User/ChangeOwnData")]
+        public IActionResult ChangeOwnData()
+        {
+            ViewBag.UserData = HttpContext.Session.Get<User>("user");
+
+            return View();
+        }
+
+        [Route("~/User/SentNewData")]
+        public IActionResult SentNewData(EditUserViewModel newUser)
+        {
+            if(newUser.Name.Length == 0 || newUser.Surname.Length == 0 || newUser.Age < 0 || newUser.Email.Length == 0 || newUser.Address.Length == 0)
+            {
+                return RedirectToRoute(new { controller = "User", action = "ChangeData" });
+            }
+
+            if(newUser.Email.Contains('@') == false)
+            {
+                return RedirectToRoute(new { controller = "User", action = "ChangeData" });
+            }
+
+            User user = HttpContext.Session.Get<User>("user");
+
+            user.Name = newUser.Name;
+            user.Surname = newUser.Surname;
+            user.Age = newUser.Age;
+            user.Email = newUser.Email;
+            user.Address = newUser.Address;
+
+            _context.User.Update(user);
+            _context.SaveChanges();
+
+            HttpContext.Session.Remove("user");
+            HttpContext.Session.Set("user", user);
+
+            return RedirectToRoute(new { controller = "User", action = "Profile" });
+        }
+
+        [Route("~/User/UserPosts/{id?}")]
+        public IActionResult UserPosts(int id)
+        {
+            ViewBag.UserPosts = _postRepository.GetPostsByUserId(id);
+
+            ViewBag.UsersName = _userRepository.GetUserById(id).Name;
+
+            ViewBag.AverageMark = averageMark(id);
+
+            return View();
+        }
+
+        private float averageMark(int id)
+        {
+            int postsCount = _postRepository.GetPostsByUserId(id).Count();
+            int allSum = 0;
+
+            var posts = _postRepository.GetPostsByUserId(id);
+
+            foreach (var i in posts)
+            {
+                allSum += _markRepository.GetPostMark(i.PostId);
+            }
+
+            float average = allSum / postsCount;
+
+            return average;
+        }
+
+        public bool CheckExist(string email)
+        {
+            if(_userRepository.GetUserNameByEmail(email) == null)
             {
                 return false;
             }
@@ -120,9 +321,9 @@ namespace MyForum.Controllers.Repository
             return true;
         }
 
-        public bool checkPass(String email, String pass)
+        public bool CheckPass(string email, string pass)
         {
-            if(_users.GetAll().Where(u=>u.Email.CompareTo(email) == 0).FirstOrDefault().Password.CompareTo(pass) == 0)
+            if (_userRepository.GetAll().Where(u => u.Email.CompareTo(email) == 0).FirstOrDefault().Password.CompareTo(pass) == 0) 
             {
                 return true;
             }

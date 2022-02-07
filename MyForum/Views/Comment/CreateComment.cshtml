@@ -1,0 +1,42 @@
+﻿@model MyForum.Data.Models.Comment
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="post">
+    <div id="postName">
+        @ViewBag.Post.PostName
+    </div>
+    <div id="postAuthor">
+        Author: <a href="~/Post/UserPosts/@ViewBag.Post.PostUserId"> @ViewBag.Post.PostUserName </a>
+    </div>
+    <div>
+        <div id="postDescription">
+            @ViewBag.Post.Description
+        </div>
+    </div>
+</div>
+
+<br />
+
+<form asp-action="Add" asp-controller="Comment">
+    <div class="form-group">
+        <label asp-for="CommentText" class="control-label">Comment: </label>
+        <input style="width: 250px;" type="text" asp-for="CommentText" class="form-control" />
+    </div>
+    <div class="form-group">
+        <input asp-for="UserId" type="hidden" value="@ViewBag.User.Id" />
+    </div>
+    <div class="form-group">
+        <input asp-for="PostId" type="hidden" value=@ViewBag.Post.PostId />
+    </div>
+    <div class="form-group">
+        <input asp-for="UserName" type="hidden" value=@ViewBag.User.Name />
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Send" class="btn btn-default" />
+    </div>
+</form>
+
+
+

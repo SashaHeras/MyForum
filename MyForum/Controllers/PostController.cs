@@ -1,63 +1,73 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MyForum.Controllers.Data;
-using MyForum.Controllers.Data.Models;
-using MyForum.Controllers.Interfaces.Repositories;
-using MyForum.Controllers.Repository.Repositories;
 using MyForum.ViewModels;
-using System;
-using System.Collections.Generic;
 using System.Linq;
+using MyForum.Core.Interfaces.Repositories;
+using MyForum.Data.Dto.Post;
+using MyForum.Data.Models;
+using MyForum.Data.Repository.Repositories;
+using MyForum.Extensions;
+using MyForum.Core.Models;
+using System;
 using System.Threading.Tasks;
 
 namespace MyForum.Controllers
 {
     public class PostController : Controller
     {
-        private MyForumContext _context;
-        private TopicRepository _topics;
-        private UserRepository _userRepository;
-        private static Int32 _TopicId = -1;
-        private readonly IPostRepository _allPosts;
+        private readonly MyForumContext _context;
+        private readonly TopicRepository _topics;
+        private readonly UserRepository _userRepository;
+        private readonly CommentRepository _comentRepository;
+        private readonly MarkRepository _markRepository;
+        private static int _TopicId = -1;
+        private readonly IPostRepository _postRepository;
 
         public PostController(IPostRepository postrepos, MyForumContext context)
         {
-            _allPosts = postrepos;
+            _postRepository = postrepos;
             _context = context;
             _topics = new TopicRepository(_context);
             _userRepository = new UserRepository(_context);
+            _comentRepository = new CommentRepository(_context);
+            _markRepository = new MarkRepository(_context);
         }
 
         [Route("~/Post/PostsList/{id?}")]
-        public IActionResult PostsList(Int32 id)
+        public IActionResult PostsList(int id)
         {
-            PostsListViewModel obj = new PostsListViewModel();
-            obj.AllPosts = _allPosts.GetPostsByTopicId(id);
+            if(HttpContext.Session.Keys.Contains("post") == true)
+            {
+                HttpContext.Session.Remove("post");
+            }
+
+            PostsListViewModel obj = new();
+            obj.AllPosts = _postRepository.GetPostsByTopicId(id);
 
             ViewData["TopicName"] = _topics.GetTopicNameById(id);
 
             ViewBag.Posts = obj.AllPosts;
+
             return View(obj);
-        }
-
-        [Route("~/Post/UserPosts/{id?}")]
-        public IActionResult UserPosts(Int32 id)
-        {
-            ViewBag.UserPosts = _allPosts.GetPostsByUserId(id);
-
-            ViewBag.UsersName = _userRepository.GetUserById(id).Name;
-
-            return View();
         }
 
         [HttpGet]
         [Route("~/Post/Post/{id?}")]
-        public IActionResult Post(Int32 id)
+        public IActionResult Post(int id)
         {
-            PostViewModel obj = new PostViewModel();
-            obj.GetPostByTopicId = _allPosts.GetPostById(id);
+            PostViewModel obj = new() {GetPostByTopicId = _postRepository.GetPostById(id)};
 
-            ViewData["UserName"] = _userRepository.GetUserNameById(obj.GetPostByTopicId.UserId);
-            ViewBag.Post = obj.GetPostByTopicId;
+            FullPost post = new FullPost(obj.GetPostByTopicId.PostId, obj.GetPostByTopicId.PostName, obj.GetPostByTopicId.Description, obj.GetPostByTopicId.UserId, obj.GetPostByTopicId.TopicId, _userRepository.GetUserNameById(obj.GetPostByTopicId.UserId), (int)_markRepository.GetAll().Where(mark => mark.PostId == obj.GetPostByTopicId.PostId).Sum(mark => mark.PostMark));
+
+            if(_comentRepository.GetCommentsByPostId(id) != null)
+            {
+                ViewBag.Comments = _comentRepository.GetCommentsByPostId(id);
+            }
+
+            HttpContext.Session.Set("fullpost", post);
+
+            ViewBag.Post = HttpContext.Session.Get<FullPost>("fullpost");
+            ViewBag.User = HttpContext.Session.Get<User>("user");
+
             return View(obj);
         }
 
@@ -75,8 +85,7 @@ namespace MyForum.Controllers
         {
             if(post.Description != null && post.PostName != null)
             {
-                _context.Post.Add(post);
-                _context.SaveChanges();
+                _postRepository.AddAsync(post);
 
                 return RedirectToRoute(new { controller = "Post", action = "PostsList", id = post.TopicId });
             }
@@ -86,24 +95,46 @@ namespace MyForum.Controllers
 
         public IActionResult EditPosts()
         {
-            ViewBag.Posts = _allPosts.GetPostsByTopicId(_topics.GetTopicByName(Request.Form["TopicName"].ToString()).FirstOrDefault().TopicId);
+            ViewBag.Posts = _postRepository.GetPostsByTopicId(_topics.GetTopicByName(Request.Form["TopicName"].ToString()).FirstOrDefault().TopicId);
             ViewData["TopicName"] = Request.Form["TopicName"];
+            ViewBag.TopicId = _topics.GetTopicByName(Request.Form["TopicName"].ToString()).FirstOrDefault().TopicId;
 
             return View();
         }
 
         [Route("~/Post/EditPost/{id?}")]
-        public IActionResult EditPost(Int32 id)
+        public IActionResult EditPost(int id)
         {
-            ViewBag.Post = _allPosts.GetPostById(id);
+            if (id == 0)
+            {
+                ViewBag.Post = _postRepository.GetPostById(Convert.ToInt32(Request.Form["PostId"]));
+            }
+            else
+            {
+                ViewBag.Post = _postRepository.GetPostById(id);
+            }
 
             return View();
         }
 
         [Route("~/Post/Edit")]
-        public IActionResult Edit(Post post)
+        public IActionResult EditPost(Post post)
         {
-            if(post.Description != null && post.PostName != null)
+            if(string.IsNullOrEmpty(post.Description))
+            {
+                ModelState.AddModelError("Description", "Uncorrect discription!");
+
+                ViewBag.Post = post;
+            }
+
+            if (string.IsNullOrEmpty(post.PostName))
+            {
+                ModelState.AddModelError("PostName", "Uncorrect post name!");
+
+                ViewBag.Post = post;
+            }
+
+            if (ModelState.IsValid)
             {
                 _context.Post.Update(post);
                 _context.SaveChanges();
@@ -111,42 +142,41 @@ namespace MyForum.Controllers
                 return RedirectToRoute(new { controller = "Post", action = "PostsList", id = post.TopicId });
             }
 
-            return RedirectToRoute(new { controller = "Post", action = "PostsList", id = post.TopicId });
+            return View();
         }
 
         public IActionResult DeletePost()
         {
-            ViewBag.Posts = _allPosts.GetPostsByTopicId(_topics.GetTopicByName(Request.Form["TopicName"].ToString()).FirstOrDefault().TopicId);
+            ViewBag.Posts = _postRepository.GetPostsByTopicId(_topics.GetTopicByName(Request.Form["TopicName"].ToString()).FirstOrDefault().TopicId);
             ViewData["TopicName"] = Request.Form["TopicName"];
+            ViewBag.TopicId = _topics.GetTopicByName(Request.Form["TopicName"].ToString()).FirstOrDefault().TopicId;
 
             return View();
         }
 
         [Route("~/Post/Delete/{id}")]
-        public IActionResult Delete(Int32 id)
+        public IActionResult Delete(int id)
         {
-            bool isFind = false;
-            Post post = new Post();
+            Post post = _postRepository.GetPostById(Convert.ToInt32(Request.Form["PostId"]));
 
-            int idInteger = id;
-            foreach (var item in _context.Post)
-            {
-                if (item.PostId == idInteger)
-                {
-                    post = item;
-                    isFind = true;
-                    break;
-                }
-            }
+            // Save id of post`s topic to redirect user on the page of all posts after removing
+            int topicId = _postRepository.GetPostById(Convert.ToInt32(Request.Form["PostId"])).TopicId;
 
-            int topicId = 0;
+            _context.Post.Remove(post);
+            _context.SaveChanges();
 
-            if (isFind)
-            {
-                topicId = _allPosts.GetPostById(id).TopicId;
-                _context.Post.Remove(post);
-                _context.SaveChanges();
-            }
+            return RedirectToRoute(new { controller = "Post", action = "PostsList", id = topicId });
+        }
+
+        public IActionResult Delete()
+        {
+            Post post = _postRepository.GetPostById(Convert.ToInt32(Request.Form["PostId"]));
+
+            // Save id of post`s topic to redirect user on the page of all posts after removing
+            int topicId = _postRepository.GetPostById(Convert.ToInt32(Request.Form["PostId"])).TopicId;
+
+            _context.Post.Remove(post);
+            _context.SaveChanges();
 
             return RedirectToRoute(new { controller = "Post", action = "PostsList", id = topicId });
         }

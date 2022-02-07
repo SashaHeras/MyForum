@@ -2,17 +2,83 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<a href="~/Post/PostsList/@ViewBag.Post.PostTopicId">Go back</a>
+<br />
+
 <div class="post">
     <div id="postName">
         @ViewBag.Post.PostName
     </div>
     <div id="postAuthor">
-        Author: <a href="~/Post/UserPosts/@ViewBag.Post.UserId"> @ViewData["UserName"] </a> 
+        Author: <a href="~/User/UserPosts/@ViewBag.Post.PostUserId"> @ViewBag.Post.PostUserName </a>
     </div>
-    </br>
+    <br />
     <div>
         <div id="postDescription">
             @ViewBag.Post.Description
         </div>
+    </div>
+    <br />
+    @if (ViewBag.Post.PostUserId == ViewBag.User.Id)
+    {
+        @using (Html.BeginForm("EditPost", "Post", FormMethod.Post))
+        {
+            <input type="hidden" name="PostId" value=@ViewBag.Post.PostId>
+            <input type="submit" value="Edit post" />
+            <br>
+        }
+        <br />
+        @using (Html.BeginForm("Delete", "Post", FormMethod.Post))
+        {
+            <input type="hidden" name="PostId" value=@ViewBag.Post.PostId>
+            <input type="submit" value="Delete post" />
+            <br>
+        }
+        <br />
+    }
+    <div style="font-family: cursive;">
+        <table>
+            <tr><td>Total mark: @ViewBag.Post.Mark</td></tr>
+            <tr>
+                <td>
+                    <form asp-action="IncreseMark" asp-controller="Mark">
+                        <input style="border-radius: 8px" type="submit" value="Like" class="btn btn-default" />
+                    </form>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <form asp-action="DegreseMark" asp-controller="Mark">
+                        <input style="border-radius: 8px" type="submit" value="Dislike" class="btn btn-default" />
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <br />
+</div>
+<br />
+
+<form asp-action="CreateComment" asp-controller="Comment">
+    <div class="form-group">
+        <input type="submit" value="Create comment" class="btn btn-default" />
+    </div>
+</form>
+<br />
+<div>
+    <div>
+        @if (ViewBag.Comments != null)
+        {
+            @foreach (var comment in ViewBag.Comments)
+            {
+                <div id="postDescription">
+                    <div>
+                        Author: <a href="~/User/UserPosts/@comment.UserId"> @comment.UserName </a>
+                    </div>
+                    <p>@comment.CommentText</p>
+                </div>
+                <br />
+            }
+        }
     </div>
 </div>

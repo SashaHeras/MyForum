@@ -1,7 +1,9 @@
-﻿@using Microsoft.AspNetCore.Http
-@{
+﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+<a href="~/Home/TopicsList">Go back</a>
+<br />
 
 <h2 class="cursive-left" style="color: #D2691E; "> All post from topic @ViewData["TopicName"]: </h2>
 <br>
@@ -28,26 +30,5 @@
             </td>
         </tr>
         <br />
-        <tr>
-            <td>
-                @using (Html.BeginForm("DeletePost", "Post", FormMethod.Post))
-                {
-                    <input type="hidden" name="TopicName" value=@ViewData["TopicName"]>
-                    <input type="submit" value="Delete post" />
-                    <br>
-                }
-            </td>
-        </tr>
-        <br />
-        <tr>
-            <td>
-                @using (Html.BeginForm("EditPosts", "Post", FormMethod.Post))
-                {
-                    <input type="hidden" name="TopicName" value=@ViewData["TopicName"]>
-                    <input type="submit" value="Edit post" />
-                    <br>
-                }
-            </td>
-        </tr>
     </table>
 }

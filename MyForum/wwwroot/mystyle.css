@@ -4,6 +4,28 @@
 
 a {
     text-decoration: none;
+    color: black;
+}
+
+a:visited {
+    color: #DC143C;
+}
+
+.charName {
+    text-align: left;
+    background-color: white;
+    border: 1px solid #000000;
+    padding: 5px;
+}
+
+.charValue {
+    padding: 5px;
+    background-color: white;
+    border: 1px solid #000000;
+}
+
+a:active {
+    color: #FF7F50;
 }
 
 td#name{
@@ -31,6 +53,17 @@ a.cursive-center {
     text-decoration: none;
 }
 
+a.login {
+    color: black;
+}
+
+#profileContext{
+    width: auto;
+    height: auto;
+    background-color: white;
+    margin: 10px;
+}
+
 textarea.desc {
     width: 160px;
     height: 40px;
@@ -54,6 +87,7 @@ textarea.desc {
     margin-bottom: 10px;
     border-radius: 8px;
     background: #FFEFD5;
+    padding-top: 10px;
 }
 
 #main {
@@ -61,6 +95,7 @@ textarea.desc {
     padding-top: 15px;
     padding-left: 15px;
     padding-right: 15px;
+    padding-bottom: 15px;
     margin-left: 255px;
     width: auto;
     min-width: 60%;
@@ -80,7 +115,8 @@ textarea.desc {
     margin-right: 10px;
     border-right: 5px solid #FDF5E6;
     border-radius: 10px;
-    position:fixed;
+    position: fixed;
+    padding-top: 10px;
 }
 
 #rigthSidebar {
@@ -100,6 +136,24 @@ textarea.desc {
     background-color: white;
     border-radius: 8px;
     height: auto;
+    width: 600px;
+}
+
+#commentDescription {
+    padding-top: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+    background-color: white;
+    border-radius: 8px;
+    height: auto;
+}
+
+#aContainer {
+    background-color: white;
+    width: 160px;
+    height: 24px;
+    border-radius: 8px;
 }
 
 #topicName {
@@ -122,7 +176,7 @@ input[type="submit"].wysija-submit {
 
 #postName {
     padding-left: 20px;
-    font-size: 18px;
+    font-size: 24px;
     font-family: cursive;
     color: black;
 }
@@ -137,6 +191,8 @@ input[type="submit"].wysija-submit {
 .login {
     font-family: cursive;
     font-size: 14px;
+    padding-right: 8px;
+    text-align: left;
 }
 
 .post{

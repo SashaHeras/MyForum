@@ -1,17 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using MyForum.Controllers.Data;
-using MyForum.Controllers.Interfaces.Repositories;
-using MyForum.Controllers.Repository.Repositories;
-using Microsoft.AspNetCore.Http;
-using MyForum.Models;
 using MyForum.ViewModels;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+using MyForum.Core.Interfaces.Repositories;
+using MyForum.Data.Models;
+using MyForum.Data.Repository.Repositories;
+using MyForum.Extensions;
 
 namespace MyForum.Controllers
 {
@@ -22,37 +16,46 @@ namespace MyForum.Controllers
         private UserRepository _users;
         private readonly ITopicRepository _allTopics;
 
-        public HomeController(ITopicRepository topics, MyForumContext _context)
+        public HomeController(ITopicRepository topics, MyForumContext context)
         {
-            this._allTopics = topics;
-            this._context = _context;
-            this._topics = new TopicRepository(_context);
-            this._users = new UserRepository(_context);
+            _allTopics = topics;
+            _context = context;
+            _topics = new TopicRepository(context);
+            _users = new UserRepository(context);
         }
 
         [HttpGet]
         public IActionResult TopicsList()
         {
-            TopicsListViewModel topicView = new TopicsListViewModel();
-            var topics = _allTopics.GetAll();
+            if(HttpContext.Session.Get<User>("user") != null)
+            {
+                TopicsListViewModel topicView = new();
+                var topics = _allTopics.GetAll();
 
-            ViewBag.AllTopics = topics;
-            return View(topicView);
-        } 
+                ViewBag.AllTopics = topics;
 
-        // POST: HomeController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+                return View(topicView);
+            }
+
+            return RedirectToRoute(new { controller = "User", action = "Login" });
+        }
+
+        [Route("~/Home/CreateTopic")]
+        public IActionResult CreateTopic()
         {
-            try
+            return View();
+        }
+
+        public IActionResult Create(Topic topic)
+        {
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                _topics.AddAsync(topic);
+
+                return RedirectToRoute(new { controller = "Home", action = "TopicsList" });
             }
-            catch
-            {
-                return View();
-            }
+
+            return RedirectToRoute(new { controller = "Home", action = "CreateTopic" });
         }
 
         // GET: HomeController/Edit/5

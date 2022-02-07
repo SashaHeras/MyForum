@@ -1,36 +1,36 @@
-﻿@model MyForum.Controllers.Data.Models.User
+﻿@model MyForum.Data.Models.User
 @{
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_LoginLayout.cshtml";
 }
 
 <form asp-action="RegistrationUser" asp-controller="User">
     <div class="form-group">
-        <label asp-for="Name" class="control-label">Name:</label>
+        <label asp-for="Name" class="control-label"><b>Name:</b></label>
         <input type="text" asp-for="Name" class="form-control" />
     </div>
     </br>
     <div class="form-group">
-        <label asp-for="Surname" class="control-label">Surname:</label>
+        <label asp-for="Surname" class="control-label"><b>Surname:</b></label>
         <input type="text" asp-for="Surname" class="form-control" />
     </div>
     </br>
     <div class="form-group">
-        <label asp-for="Age" class="control-label">Age:</label>
+        <label asp-for="Age" class="control-label"><b>Age:</b></label>
         <input type="number" asp-for="Age" class="form-control" />
     </div>
     </br>
     <div class="form-group">
-        <label asp-for="Address" class="control-label">Address:</label>
+        <label asp-for="Address" class="control-label"><b>Address:</b></label>
         <input type="text" asp-for="Address" class="form-control" />
     </div>
     </br>
     <div class="form-group">
-        <label asp-for="Email" class="control-label">E-mail:</label>
+        <label asp-for="Email" class="control-label"><b>E-mail:</b></label>
         <input type="text" asp-for="Email" class="form-control" />
     </div>
     </br>
     <div class="form-group">
-        <label asp-for="Password" class="control-label">Password:</label>
+        <label asp-for="Password" class="control-label"><b>Password:</b></label>
         <input type="text" asp-for="Password" class="form-control" />
     </div>
     </br>

@@ -1,0 +1,60 @@
+﻿@model MyForum.ViewModels.EditUserViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<form asp-action="SentNewData" asp-controller="User">
+    <table>
+        <tr>
+            <td class="form-group" style="text-align: right">
+                <label asp-for="Name" class="control-label">Name:</label>
+            </td>
+            <td class="form-group" style="padding-left: 8px">
+                <input type="text" asp-for="Name" class="form-control" value="@ViewBag.UserData.Name" />
+            </td>
+        </tr>
+        <tr>
+            <td class="form-group" style="text-align: right">
+                <label asp-for="Surname" class="control-label">Surname:</label>
+            </td>
+            <td class="form-group" style="padding-left: 8px">
+                <input type="text" asp-for="Surname" class="form-control" value="@ViewBag.UserData.Surname"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="form-group" style="text-align: right">
+                <label asp-for="Age" class="control-label">Age:</label>
+            </td>
+            <td class="form-group" style="padding-left: 8px">
+                <input type="number" asp-for="Age" class="form-control" value="@ViewBag.UserData.Age"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="form-group" style="text-align: right">
+                <label asp-for="Email" class="control-label">Email:</label>
+            </td>
+            <td class="form-group" style="padding-left: 8px">
+                <input type="text" asp-for="Email" class="form-control" value="@ViewBag.UserData.Email"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="form-group" style="text-align: right">
+                <label asp-for="Address" class="control-label">Address:</label>
+            </td>
+            <td class="form-group" style="padding-left: 8px">
+                <input type="text" asp-for="Address" class="form-control" value="@ViewBag.UserData.Address"/>
+            </td>
+        </tr>
+    </table>
+    <br />
+    <table>
+        <tr>
+            <td>
+                <div class="form-group" style="margin: 5px">
+                    <input type="submit" style="width: 100px" value="Change" class="btn btn-default" />
+                </div>
+            </td>
+        </tr>
+    </table>
+</form>
+
