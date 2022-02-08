@@ -138,13 +138,15 @@ namespace MyForum.Controllers
 
             if(HttpContext.Session.Get<User>("user").Picture == null)
             {
-                string imagepath = @"C:\Users\User\source\repos\MyForum\MyForum\wwwroot\images\default.png";
+                string imagepath = Path.GetFullPath(@"wwwroot\images\default.png");
                 FileStream fs = new FileStream(imagepath, FileMode.Open);
                 byte[] byData = new byte[fs.Length];
                 fs.Read(byData, 0, byData.Length);
 
                 var base64 = Convert.ToBase64String(byData);
                 ViewBag.Picture = String.Format("data:image/jpg;base64,{0}", base64);
+
+                fs.Close();
             }
             else
             {
