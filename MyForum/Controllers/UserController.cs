@@ -13,6 +13,8 @@ using MyForum.Data.Repository.Repositories;
 using MyForum.Extensions;
 using MyForum.ViewModels;
 using MyForum.Core.Models;
+using System.Net.Mail;
+using System.Net;
 
 namespace MyForum.Controllers
 {
@@ -24,6 +26,7 @@ namespace MyForum.Controllers
         private PostRepository _postRepository;
         private TopicRepository _topics;
         private MarkRepository _markRepository;
+        private CommentRepository _commentRepository;
         private readonly UserRepository _userRepository;
 
         public UserController(IUserRepository iAllUsers, MyForumContext context)
@@ -34,6 +37,7 @@ namespace MyForum.Controllers
             _userRepository = new UserRepository(_context);
             _postRepository = new PostRepository(_context);
             _markRepository = new MarkRepository(_context);
+            _commentRepository = new CommentRepository(_context);
         }
 
         // Метод перехода на страницу для входа
@@ -54,7 +58,7 @@ namespace MyForum.Controllers
                 HttpContext.Session.Remove("user");
             }
 
-            if(!Regex.IsMatch(user.Email,@"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}"))
+            if(user.Email == null || !Regex.IsMatch(user.Email,@"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}"))
             {
                 ModelState.AddModelError("Email", "Uncorrect email");
 
@@ -121,6 +125,9 @@ namespace MyForum.Controllers
                 return RedirectToRoute(new { controller = "User", action = "Registration" });
             }
 
+            user.Created = DateTime.Now.ToShortDateString();
+            user.IsVerified = false;
+
             _context.User.Add(user);
             _context.SaveChanges();
 
@@ -154,25 +161,19 @@ namespace MyForum.Controllers
                 ViewBag.Picture = String.Format("data:image/jpg;base64,{0}", base64);
             }
 
+            ViewBag.IsAdmin = HttpContext.Session.Get<User>("user").IsAdmin;
             ViewBag.User = HttpContext.Session.Get<User>("user");
+            ViewBag.UsersPosts = _postRepository.GetAll().Where(p => p.UserId == HttpContext.Session.Get<User>("user").Id);
 
             return View();
-        }
-
-        [HttpGet]
-        public IActionResult UsersList()
-        {
-            UsersListViewModel obj = new();
-            var users = _allUsers.GetAll();
-            ViewBag.AllUsers = users;
-
-            return View(obj);
         }
 
         [HttpGet]
         [Route("~/User/ChangePass")]
         public IActionResult ChangePass()
         {
+            ViewBag.IsAdmin = HttpContext.Session.Get<User>("user").IsAdmin;
+
             return View();
         }
 
@@ -249,6 +250,7 @@ namespace MyForum.Controllers
         [Route("~/User/ChangeOwnData")]
         public IActionResult ChangeOwnData()
         {
+            ViewBag.IsAdmin = HttpContext.Session.Get<User>("user").IsAdmin;
             ViewBag.UserData = HttpContext.Session.Get<User>("user");
 
             return View();
@@ -276,7 +278,7 @@ namespace MyForum.Controllers
             user.Address = newUser.Address;
 
             _context.User.Update(user);
-            _context.SaveChanges();
+            _context.SaveChanges();           
 
             HttpContext.Session.Remove("user");
             HttpContext.Session.Set("user", user);
@@ -287,6 +289,8 @@ namespace MyForum.Controllers
         [Route("~/User/UserPosts/{id?}")]
         public IActionResult UserPosts(int id)
         {
+            ViewBag.IsAdmin = HttpContext.Session.Get<User>("user").IsAdmin;
+
             ViewBag.UserPosts = _postRepository.GetPostsByUserId(id);
 
             ViewBag.UsersName = _userRepository.GetUserById(id).Name;
@@ -294,6 +298,177 @@ namespace MyForum.Controllers
             ViewBag.AverageMark = averageMark(id);
 
             return View();
+        }
+
+        [Route("~/User/PickupRights/{id?}")]
+        public IActionResult PickupRights(int id)
+        {
+            if (HttpContext.Session.Get<User>("user").IsAdmin)
+            {
+                User user = _context.User.Where(u => u.Id == id).FirstOrDefault();
+
+                user.IsAdmin = false;
+
+                _context.User.Update(user);
+                _context.SaveChanges();
+
+                return RedirectToRoute(new { controller = "Admin", action = "UsersList" });
+            }
+
+            return RedirectToRoute(new { controller = "User", action = "Login" });
+        }
+
+        [Route("~/User/GiveRights/{id?}")]
+        public IActionResult GiveRights(int id)
+        {
+            if (HttpContext.Session.Get<User>("user").IsAdmin) 
+            {
+                User user = _context.User.Where(u => u.Id == id).FirstOrDefault();
+
+                user.IsAdmin = true;
+
+                _context.User.Update(user);
+                _context.SaveChanges();
+
+                return RedirectToRoute(new { controller = "Admin", action = "UsersList" });
+            }
+
+            return RedirectToRoute(new { controller = "User", action = "Login" });
+        }
+
+        [Route("~/User/DeleteUser/{id?}")]
+        public IActionResult DeleteUser(int id)
+        {
+            if(HttpContext.Session.Get<User>("user").IsAdmin)
+            {
+                User user = _context.User.Where(u => u.Id == id).FirstOrDefault();
+                                
+                do
+                {
+                    if(_commentRepository.GetAll().Where(c => c.UserId == id).FirstOrDefault() != null)
+                    {
+                        _context.Comment.Remove(_commentRepository.GetAll().Where(c => c.UserId == id).FirstOrDefault());
+                        _context.SaveChanges();
+                    }
+                } while(_commentRepository.GetAll().Where(c => c.UserId == id).FirstOrDefault() != null);
+
+                do
+                {
+                    if (_markRepository.GetAll().Where(m => m.UserId == id).FirstOrDefault() != null)
+                    {
+                        _context.Mark.Remove(_markRepository.GetAll().Where(m => m.UserId == id).FirstOrDefault());
+                        _context.SaveChanges();
+                    }
+                } while (_markRepository.GetAll().Where(m => m.UserId == id).FirstOrDefault() != null);
+
+                do
+                {
+                    if(_postRepository.GetAll().Where(p => p.UserId == id).FirstOrDefault() != null)
+                    {
+                        int pid = _postRepository.GetAll().Where(p => p.UserId == id).FirstOrDefault().PostId;
+
+                        _context.Post.Remove(_postRepository.GetAll().Where(p => p.UserId == id).FirstOrDefault());
+
+                        do
+                        {
+                            if (_commentRepository.GetAll().Where(c => c.PostId == pid).FirstOrDefault() != null)
+                            {
+                                _context.Comment.Remove(_commentRepository.GetAll().Where(c => c.PostId == pid).FirstOrDefault());
+                                _context.SaveChanges();
+                            }
+                        } while (_commentRepository.GetAll().Where(c => c.PostId == pid).FirstOrDefault() != null);
+
+                        do
+                        {
+                            if (_commentRepository.GetAll().Where(c => c.PostId == pid).FirstOrDefault() != null)
+                            {
+                                _context.Comment.Remove(_commentRepository.GetAll().Where(c => c.PostId == pid).FirstOrDefault());
+                                _context.SaveChanges();
+                            }
+                        } while (_commentRepository.GetAll().Where(c => c.PostId == pid).FirstOrDefault() != null);
+
+                        _context.SaveChanges();
+                    }
+                } while (_postRepository.GetAll().Where(p => p.UserId == id).FirstOrDefault() != null);
+
+                _context.User.Remove(user);
+                _context.SaveChanges();
+
+                return RedirectToRoute(new { controller = "Admin", action = "UsersList" });
+            }
+
+            return RedirectToRoute(new { controller = "User", action = "Login" });
+        }
+
+        [Route("~/User/Verification")]
+        public IActionResult Verification()
+        {
+            int p = SendSecretPass(HttpContext.Session.Get<User>("user").Id);
+
+            if (p == -1)
+            {
+
+            }
+
+            HttpContext.Session.Set<int>("secret", p);
+
+            return View();
+        }
+
+        [Route("~/User/ComplateVerification")]
+        public IActionResult ComplateVerification()
+        {
+            User u = HttpContext.Session.Get<User>("user");
+
+            if (Request.Form["pass"].ToString() == HttpContext.Session.Get<int>("secret").ToString())
+            {
+                u.IsVerified = true;
+                HttpContext.Session.Remove("secret");
+
+                _context.User.Update(u);
+                _context.SaveChanges();
+
+                return RedirectToRoute(new { controller = "User", action = "Profile" });
+            }
+
+            HttpContext.Session.Remove("secret");
+
+            return RedirectToRoute(new { controller = "User", action = "Profile" });
+        }
+
+        private int SendSecretPass(int id)
+        {
+            MailMessage msg = new MailMessage();
+
+            msg.From = new MailAddress("acseler16@gmail.com");
+            msg.To.Add(_userRepository.GetUserById(id).Email.ToString());
+            msg.Subject = "Verification";
+
+            Random rand = new Random();
+            int pass = rand.Next(100000, 999999);
+            msg.Body = "Secret pass: " + pass.ToString();
+
+            using (SmtpClient client = new SmtpClient())
+            {
+                client.EnableSsl = true;
+                client.UseDefaultCredentials = false;
+                client.Credentials = new NetworkCredential("acseler16@gmail.com", "Cthusq2002");
+                client.Host = "smtp.gmail.com";
+                client.Port = 587;
+                client.DeliveryMethod = SmtpDeliveryMethod.Network;
+
+                try
+                {
+                    client.Send(msg);
+                    return pass;
+                }
+                catch (Exception ex)
+                {
+                    
+                }
+            }
+
+            return -1;
         }
 
         private float averageMark(int id)

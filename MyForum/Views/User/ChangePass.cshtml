@@ -1,32 +1,39 @@
 ﻿@model MyForum.ViewModels.ChangePassViewModel
 @{
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    if(ViewBag.IsAdmin == true)
+    {
+        Layout = "~/Views/Shared/AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
 }
 
 <form asp-action="SentNewPass" asp-controller="User">
     <table>
         <tr>
-            <td class="form-group" style="text-align: right">
+            <td class="form-group" style="text-align: right;">
                 <label asp-for="oldPass" class="control-label">Old password:</label>
             </td>
             <td class="form-group" style="padding-left: 8px">
-                <input type="text" asp-for="oldPass" class="form-control" />
+                <input type="password" asp-for="oldPass" class="form-control" style="margin:5px"/>
             </td>
         </tr>
-        <tr>
+        <tr style="margin:5px">
             <td class="form-group" style="text-align: right">
                 <label asp-for="newPass" class="control-label">New password:</label>
             </td>
             <td class="form-group" style="padding-left: 8px">
-                <input type="text" asp-for="newPass" class="form-control" />
+                <input type="password" asp-for="newPass" class="form-control" style="margin:5px"/>
             </td>
         </tr>
-        <tr>
+        <tr style="margin:5px">
             <td class="form-group" style="text-align: right">
                 <label asp-for="newPassConfign" class="control-label">Confign new password:</label>
             </td>
             <td class="form-group" style="padding-left: 8px">
-                <input type="text" asp-for="newPassConfign" class="form-control" />
+                <input type="password" asp-for="newPassConfign" class="form-control" style="margin:5px"/>
             </td>
         </tr>
     </table>

@@ -1,0 +1,56 @@
+﻿@{
+    if(ViewBag.IsAdmin == true)
+    {
+        Layout = "~/Views/Shared/AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<h4> All comments </h4>
+
+ <table class="table">
+            <thead>
+                <tr>
+                    <td><b>#</b></td>
+                    <td><b>Name</b></td>
+                    <td><b>Surname</b></td>
+                    <td><b>Email</b></td>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    foreach(var user in ViewBag.Users)
+                    {
+                        <tr>
+                        <td>@user.Id</td>
+                        <td>@user.Name</td>
+                        <td>@user.Surname</td>
+                        <td>@user.Email</td>
+                            <td>
+                                  @{
+                                      if(user.IsAdmin == true){
+                                          <a class="btn btn-warning" href="~/User/PickupRights/@user.Id">
+                                              Pick up rights
+                                          </a>
+                                      }
+                                      else{
+                                          <a class="btn btn-success" href="~/User/GiveRights/@user.Id">
+                                              To give rights
+                                          </a>
+                                      }
+                                  }
+                                  <a class="btn btn-danger" href="~/User/DeleteUser/@user.Id">
+                                        Delete
+                                  </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                <tr>
+                    <td><a class="btn btn-default" href="~/Admin/CreateUser">Create user</a></td>
+                </tr>
+            </tbody>
+        </table>

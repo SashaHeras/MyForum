@@ -1,6 +1,13 @@
 ﻿@model MyForum.ViewModels.EditUserViewModel
 @{
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    if(ViewBag.IsAdmin == true)
+    {
+        Layout = "~/Views/Shared/AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
 }
 
 <form asp-action="SentNewData" asp-controller="User">

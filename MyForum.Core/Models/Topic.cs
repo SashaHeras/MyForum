@@ -8,5 +8,7 @@ namespace MyForum.Data.Models
         [Required]
         [Display(Name = "TopicName")]
         public string TopicName { get; set; }
+
+        public bool IsAllow { get; set; }
     }
 }

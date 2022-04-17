@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace MyForum.Data.Models
 {
@@ -17,5 +18,11 @@ namespace MyForum.Data.Models
         public string Description { get; set; }
 
         public int UserId { get; set; }
+
+        public bool IsAllow { get; set; }
+
+        public DateTime Updated { get; set; }
+
+        public int Views { get; set; }
     }
 }

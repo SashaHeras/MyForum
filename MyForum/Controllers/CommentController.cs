@@ -31,7 +31,27 @@ namespace MyForum.Controllers
 
             ViewBag.User = HttpContext.Session.Get<User>("user");
 
+            ViewBag.IsAdmin = HttpContext.Session.Get<User>("user").IsAdmin;
+
             return View();
+        }
+
+        [Route("~/Comment/Disallow/{id}")]
+        public IActionResult Disallow(int id)
+        {
+            _comentRepository.GetCommentById(id).IsAllow = false;
+            _context.SaveChanges();
+
+            return RedirectToRoute(new { controller = "Admin", action = "CommentsList" });
+        }
+
+        [Route("~/Comment/Allow/{id}")]
+        public IActionResult Allow(int id)
+        {
+            _comentRepository.GetCommentById(id).IsAllow = true;
+            _context.SaveChanges();
+
+            return RedirectToRoute(new { controller = "Admin", action = "CommentsList" });
         }
 
         [Route("~/Comment/Add")]
@@ -44,6 +64,15 @@ namespace MyForum.Controllers
             _context.SaveChanges();
 
             return RedirectToRoute(new { controller = "Post", action = "Post", id = Comment.PostId });
+        }
+
+        [Route("~/Comment/Delete/{id}")]
+        public IActionResult Delete(int id)
+        {
+            _context.Comment.Remove(_comentRepository.GetCommentById(id));
+            _context.SaveChanges();
+
+            return RedirectToRoute(new { controller = "Admin", action = "CommentsList" });
         }
     }
 }

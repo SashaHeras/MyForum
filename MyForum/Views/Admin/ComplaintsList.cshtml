@@ -1,0 +1,35 @@
+﻿@{
+    if(ViewBag.IsAdmin == true)
+    {
+        Layout = "~/Views/Shared/AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<h4> All complaints </h4>
+
+ <table class="table">
+            <thead>
+                <tr>
+                    <td><b>#</b></td>
+                    <td><b>Description</b></td>
+                    <td><b>Go to post</b></td>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    foreach(var complaint in ViewBag.Complaints)
+                    {
+                        <tr>
+                        <td>@complaint.Id</td>
+                        <td>@complaint.Description</td>
+                        <td><a class="btn btn-default" href="~/Post/Post/@complaint.PostId">Go to post</a></td>
+                        <td><a class="btn btn-danger" href="~/Admin/DeleteComplaiment/@complaint.Id">Delete</a></td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>

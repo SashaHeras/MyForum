@@ -1,0 +1,13 @@
+﻿@{
+    if(ViewBag.IsAdmin == true)
+    {
+        Layout = "~/Views/Shared/AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<a href="~/User/Profile">Go to profile</a>
+<br />

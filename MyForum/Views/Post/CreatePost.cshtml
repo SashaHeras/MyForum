@@ -1,6 +1,13 @@
 ﻿@model MyForum.Data.Models.Post
 @{
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    if(ViewBag.IsAdmin == true)
+    {
+        Layout = "~/Views/Shared/AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
     ViewData["Title"] = "Add post";
 }
 

@@ -12,6 +12,10 @@ namespace MyForum.Data.Dto.Post
         public string PostUserName { get; set; }
         public int Mark { get; set; }
 
+        public string Updated { get; set; }
+
+        public int Views { get; set; }
+
         public FullPost()
         {
 

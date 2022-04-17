@@ -1,0 +1,45 @@
+﻿@model MyForum.Data.Models.User
+@{
+    Layout = "~/Views/Shared/AdminLayout.cshtml";
+}
+
+<form asp-action="Create" asp-controller="Admin">
+    <div class="form-group">
+        <label asp-for="Name" class="control-label"><b>Name:</b></label>
+        <input type="text" asp-for="Name" class="form-control " style="width: 300px" />
+    </div>
+    </br>
+    <div class="form-group">
+        <label asp-for="Surname" class="control-label"><b>Surname:</b></label>
+        <input type="text" asp-for="Surname" class="form-control" style="width: 300px" />
+    </div>
+    </br>
+    <div class="form-group">
+        <label asp-for="Age" class="control-label"><b>Age:</b></label>
+        <input type="number" asp-for="Age" class="form-control" style="width: 80px" />
+    </div>
+    </br>
+    <div class="form-group">
+        <label asp-for="Address" class="control-label"><b>Address:</b></label>
+        <input type="text" asp-for="Address" class="form-control" style="width: 300px" />
+    </div>
+    </br>
+    <div class="form-group">
+        <label asp-for="Email" class="control-label"><b>E-mail:</b></label>
+        <input type="text" asp-for="Email" class="form-control" style="width: 300px" />
+    </div>
+    </br>
+    <div class="form-group">
+        <label asp-for="Password" class="control-label"><b>Password:</b></label>
+        <input type="text" asp-for="Password" class="form-control" style="width: 300px" />
+    </div>
+    </br>
+    <div class="form-group">
+        <label asp-for="IsAdmin" class="control-label"><b>Is admin:</b></label>
+        <input type="checkbox" asp-for="IsAdmin" />
+    </div>
+    </br>
+    <div class="form-group">
+        <input class="btn btn-default" type="submit" value="Create"  />
+    </div>
+</form>

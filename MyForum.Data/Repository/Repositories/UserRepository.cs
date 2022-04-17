@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using MyForum.Core.Interfaces.Infrastructure;
 using MyForum.Core.Interfaces.Repositories;
 using MyForum.Data.Models;
@@ -30,6 +32,11 @@ namespace MyForum.Data.Repository.Repositories
         public User GetUserNameByEmail(string email)
         {
             return GetAll().Where(u => u.Email.CompareTo(email) == 0).FirstOrDefault();
+        }
+
+        public IEnumerable<User> GetAllWithoutUser(int id)
+        {
+            return GetAll().Except(GetAll().Where(u => u.Id == id));  
         }
     }
 }

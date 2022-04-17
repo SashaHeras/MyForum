@@ -9,6 +9,8 @@ using MyForum.Extensions;
 using MyForum.Core.Models;
 using System;
 using System.Threading.Tasks;
+using System.Web.WebPages.Html;
+using System.Net;
 
 namespace MyForum.Controllers
 {
@@ -19,6 +21,7 @@ namespace MyForum.Controllers
         private readonly UserRepository _userRepository;
         private readonly CommentRepository _comentRepository;
         private readonly MarkRepository _markRepository;
+        private ComplaintRepository _complaintRepository;
         private static int _TopicId = -1;
         private readonly IPostRepository _postRepository;
 
@@ -30,6 +33,7 @@ namespace MyForum.Controllers
             _userRepository = new UserRepository(_context);
             _comentRepository = new CommentRepository(_context);
             _markRepository = new MarkRepository(_context);
+            _complaintRepository = new ComplaintRepository(_context);
         }
 
         [Route("~/Post/PostsList/{id?}")]
@@ -45,9 +49,53 @@ namespace MyForum.Controllers
 
             ViewData["TopicName"] = _topics.GetTopicNameById(id);
 
-            ViewBag.Posts = obj.AllPosts;
+            if(HttpContext.Session.Get<int>("sort") == 0)
+            {
+                ViewBag.Posts = obj.AllPosts.Where(p => p.IsAllow == true);
+                ViewBag.SortType = 0;
+            }
+            else
+            {
+                if(HttpContext.Session.Get<int>("sort") == 1)
+                {
+                    ViewBag.Posts = obj.AllPosts.Where(p => p.IsAllow == true).OrderByDescending(p => p.Views);
+                    ViewBag.SortType = 1;
+                }
+                else if(HttpContext.Session.Get<int>("sort") == 2)
+                {
+                    ViewBag.Posts = obj.AllPosts.Where(p => p.IsAllow == true).OrderByDescending(p => p.Updated);
+                    ViewBag.SortType = 2;
+                }
+            }
+
+            ViewBag.IsAdmin = HttpContext.Session.Get<User>("user").IsAdmin;
 
             return View(obj);
+        }
+
+        [Route("~/Post/CategoryChosen")]
+        public IActionResult ChoosenSortType(SelectListItem item)
+        {
+            HttpContext.Session.Set<int>("sort", Convert.ToInt32(Request.Form["SortType"]));
+
+            return RedirectToRoute(new { controller = "Post", action = "PostsList", id = _topics.GetTopicByName(Request.Form["topic"].ToString()).FirstOrDefault().TopicId }) ;
+        }
+
+        [Route("~/Post/SearchPosts")]
+        public IActionResult SearchPosts()
+        {
+            if (HttpContext.Session.Keys.Contains("post") == true)
+            {
+                HttpContext.Session.Remove("post");
+            }
+
+            ViewBag.Search = Request.Form["Search"].ToString();
+
+            ViewBag.Posts = _postRepository.GetAll().Where(p => p.IsAllow == true && (p.PostName.Contains(Request.Form["Search"].ToString()) || p.Description.Contains(Request.Form["Search"].ToString())));
+
+            ViewBag.IsAdmin = HttpContext.Session.Get<User>("user").IsAdmin;
+
+            return View();
         }
 
         [HttpGet]
@@ -57,16 +105,26 @@ namespace MyForum.Controllers
             PostViewModel obj = new() {GetPostByTopicId = _postRepository.GetPostById(id)};
 
             FullPost post = new FullPost(obj.GetPostByTopicId.PostId, obj.GetPostByTopicId.PostName, obj.GetPostByTopicId.Description, obj.GetPostByTopicId.UserId, obj.GetPostByTopicId.TopicId, _userRepository.GetUserNameById(obj.GetPostByTopicId.UserId), (int)_markRepository.GetAll().Where(mark => mark.PostId == obj.GetPostByTopicId.PostId).Sum(mark => mark.PostMark));
+            post.Updated = _postRepository.GetPostById(id).Updated.Date.ToShortDateString();
+            post.Views = _postRepository.GetPostById(id).Views;
 
-            if(_comentRepository.GetCommentsByPostId(id) != null)
+            Post p = _postRepository.GetPostById(id);
+            p.Views++;
+
+            _context.Post.Update(p);
+            _context.SaveChanges();
+
+            if (_comentRepository.GetCommentsByPostId(id) != null)
             {
-                ViewBag.Comments = _comentRepository.GetCommentsByPostId(id);
+                ViewBag.Comments = _comentRepository.GetCommentsByPostId(id).Where(c => c.IsAllow == true);
             }
 
             HttpContext.Session.Set("fullpost", post);
 
             ViewBag.Post = HttpContext.Session.Get<FullPost>("fullpost");
             ViewBag.User = HttpContext.Session.Get<User>("user");
+
+            ViewBag.IsAdmin = HttpContext.Session.Get<User>("user").IsAdmin;
 
             return View(obj);
         }
@@ -77,6 +135,8 @@ namespace MyForum.Controllers
 
             ViewBag.User = HttpContext.Session.Get<User>("user");
 
+            ViewBag.IsAdmin = HttpContext.Session.Get<User>("user").IsAdmin;
+
             return View();
         }
 
@@ -85,6 +145,7 @@ namespace MyForum.Controllers
         {
             if(post.Description != null && post.PostName != null)
             {
+                post.Updated = DateTime.Now;
                 _postRepository.AddAsync(post);
 
                 return RedirectToRoute(new { controller = "Post", action = "PostsList", id = post.TopicId });
@@ -98,6 +159,8 @@ namespace MyForum.Controllers
             ViewBag.Posts = _postRepository.GetPostsByTopicId(_topics.GetTopicByName(Request.Form["TopicName"].ToString()).FirstOrDefault().TopicId);
             ViewData["TopicName"] = Request.Form["TopicName"];
             ViewBag.TopicId = _topics.GetTopicByName(Request.Form["TopicName"].ToString()).FirstOrDefault().TopicId;
+
+            ViewBag.IsAdmin = HttpContext.Session.Get<User>("user").IsAdmin;
 
             return View();
         }
@@ -113,6 +176,8 @@ namespace MyForum.Controllers
             {
                 ViewBag.Post = _postRepository.GetPostById(id);
             }
+
+            ViewBag.IsAdmin = HttpContext.Session.Get<User>("user").IsAdmin;
 
             return View();
         }
@@ -136,11 +201,15 @@ namespace MyForum.Controllers
 
             if (ModelState.IsValid)
             {
+                post.Updated = DateTime.Now;
+
                 _context.Post.Update(post);
                 _context.SaveChanges();
 
                 return RedirectToRoute(new { controller = "Post", action = "PostsList", id = post.TopicId });
             }
+
+            ViewBag.IsAdmin = HttpContext.Session.Get<User>("user").IsAdmin;
 
             return View();
         }
@@ -150,6 +219,8 @@ namespace MyForum.Controllers
             ViewBag.Posts = _postRepository.GetPostsByTopicId(_topics.GetTopicByName(Request.Form["TopicName"].ToString()).FirstOrDefault().TopicId);
             ViewData["TopicName"] = Request.Form["TopicName"];
             ViewBag.TopicId = _topics.GetTopicByName(Request.Form["TopicName"].ToString()).FirstOrDefault().TopicId;
+
+            ViewBag.IsAdmin = HttpContext.Session.Get<User>("user").IsAdmin;
 
             return View();
         }
@@ -168,6 +239,25 @@ namespace MyForum.Controllers
             return RedirectToRoute(new { controller = "Post", action = "PostsList", id = topicId });
         }
 
+        [Route("~/Post/CreateComplaint")]
+        public IActionResult CreateComplaint()
+        {
+            ViewBag.IsAdmin = HttpContext.Session.Get<User>("user").IsAdmin;
+
+            ViewBag.PostId = Request.Form["PostId"];
+
+            return View();
+        }
+
+        [Route("~/Post/ComplaintCreate")]
+        public IActionResult Create(Complaint comp)
+        {
+            _context.Complaint.Add(comp);
+            _context.SaveChanges();
+
+            return RedirectToRoute(new { controller = "Post", action = "Post", id = comp.PostId });
+        }
+
         public IActionResult Delete()
         {
             Post post = _postRepository.GetPostById(Convert.ToInt32(Request.Form["PostId"]));
@@ -179,6 +269,39 @@ namespace MyForum.Controllers
             _context.SaveChanges();
 
             return RedirectToRoute(new { controller = "Post", action = "PostsList", id = topicId });
+        }
+
+        [Route("~/Post/Disallow/{id}")]
+        public IActionResult Disallow(int id)
+        {
+            _postRepository.GetPostById(id).IsAllow = false;
+
+            _context.Post.Update(_postRepository.GetPostById(id));
+            _context.SaveChanges();
+
+            return RedirectToRoute(new { controller = "Admin", action = "PostsList" });
+        }
+
+        [Route("~/Post/Allow/{id}")]
+        public IActionResult Allow(int id)
+        {
+            _postRepository.GetPostById(id).IsAllow = true;
+
+            _context.Post.Update(_postRepository.GetPostById(id));
+            _context.SaveChanges();
+
+            return RedirectToRoute(new { controller = "Admin", action = "PostsList" });
+        }
+
+        [Route("~/Post/DeleteById/{id}")]
+        public IActionResult DeleteById(int id)
+        {
+            Post post = _postRepository.GetPostById(id);
+
+            _context.Post.Remove(post);
+            _context.SaveChanges();
+
+            return RedirectToRoute(new { controller = "Admin", action = "PostsList" });
         }
     }
 }

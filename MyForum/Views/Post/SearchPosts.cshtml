@@ -1,0 +1,55 @@
+﻿@{
+    if(ViewBag.IsAdmin == true)
+    {
+        Layout = "~/Views/Shared/AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<a href="~/Home/TopicsList">Go back</a>
+<br />
+
+<h2 class="cursive-left" style="color: #D2691E; "> Search result: </h2>
+
+@using (Html.BeginForm("SearchPosts", "Post", FormMethod.Post, "Search"))
+{
+    <table>
+        <tr>    
+            <td>
+                @{
+                    if(ViewBag.Search != null)
+                    {
+                        <input class="form-control" type="text" name="Search" style="width: 350px; margin-right: 15px" value="@ViewBag.Search"/>
+                    }
+                    else
+                    {
+                        <input class="form-control" type="text" name="Search" style="width: 350px; margin-right: 15px" value=""/>
+                    }
+                }
+                </td>
+            <td><input class="btn btn-default pull-right" type="submit" value="Search" /></td>
+        </tr>
+    </table>
+}  
+<br />
+
+@{
+    if(ViewBag.Posts != null)
+    {
+        foreach (var post in ViewBag.Posts)
+        {
+            <a id="containerTopic" href="~/Post/Post/@post.PostId">
+                @post.PostName
+            </a>
+            <br>
+            <br>
+        }
+    }
+    else
+    {
+        <h2> Any post, which contain '@ViewBag.Search'</h2>
+    }
+}

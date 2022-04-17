@@ -1,6 +1,13 @@
 ﻿@model MyForum.Data.Models.Post
 @{
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    if(ViewBag.IsAdmin == true)
+    {
+        Layout = "~/Views/Shared/AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
     ViewData["Title"] = "Edit post";
 }
 
@@ -13,12 +20,12 @@
     </div>
     <div class="form-group">
         <label asp-for="PostName" class="control-label">Post name</label>
-        <input type="text" asp-for="PostName" class="form-control" value="@ViewBag.Post.PostName" />
+        <input type="text" asp-for="PostName" class="form-control" style="width: 500px;" value="@ViewBag.Post.PostName" />
         @Html.ValidationMessageFor(model => model.PostName)
     </div>
     <div class="form-group">
         <label asp-for="Description" class="control-label">Description</label>
-        <input asp-for="Description" type="text" style="width: 500px;" class="form-control" value="@ViewBag.Post.Description">
+        <input asp-for="Description" type="text" style="width: 75%" class="form-control" value="@ViewBag.Post.Description">
         @Html.ValidationMessageFor(model => model.Description)
     </div>
     <div class="form-group">
@@ -28,6 +35,6 @@
         <input asp-for="TopicId" type="hidden" value="@ViewBag.Post.TopicId" />
     </div>
     <div class="form-group">
-        <input type="submit" value="Edit" class="btn btn-default" />
+        <input class="btn btn-default" type="submit" value="Edit"/>
     </div>
 </form>

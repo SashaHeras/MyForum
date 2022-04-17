@@ -1,5 +1,12 @@
 ﻿@{
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    if(ViewBag.IsAdmin == true)
+    {
+        Layout = "~/Views/Shared/AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
 }
 
 <a href="~/Home/TopicsList">Go back</a>
@@ -7,6 +14,55 @@
 
 <h2 class="cursive-left" style="color: #D2691E; "> All post from topic @ViewData["TopicName"]: </h2>
 <br>
+
+<form action="~/Post/CategoryChosen" method="post">
+
+    <fieldset>
+        <table style="margin-bottom: 15px">
+            <tr>
+                <td>Posts sort: </td>
+                <td>
+                    <select style="margin-left: 5px" id="SortType" name="SortType">
+                        @{
+                            if(ViewBag.SortType == 0)
+                            {
+                                <option selected="selected" value="0">Default</option>
+                            }
+                            else
+                            {
+                                <option value="0">Default</option>
+                            }
+
+                            if(ViewBag.SortType == 1)
+                            {
+                                <option selected="selected" value="1">Views</option>
+                            }
+                            else
+                            {
+                                <option value="1">Views</option>
+                            }
+
+                            if(ViewBag.SortType == 2)
+                            {
+                                <option selected="selected" value="2">Updeted</option>
+                            }
+                            else
+                            {
+                                <option value="2">Updeted</option>
+                            }
+                        }
+                    </select>
+                </td>
+                <td>
+                    <input type="hidden" value="@ViewData["TopicName"]" name="topic"/>
+
+                    <input class="btn btn-default" style="margin-left: 5px" type="submit" value="Submit" />
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+
+</form>
 
 @{
     foreach (var post in ViewBag.Posts)
@@ -24,7 +80,7 @@
                 @using (Html.BeginForm("CreatePost", "Post", FormMethod.Post))
                 {
                     <input type="hidden" name="TopicName" value=@ViewData["TopicName"]>
-                    <input type="submit" value="Create new post" />
+                    <input class="btn btn-default" type="submit" value="Create new post" />
                     <br>
                 }
             </td>

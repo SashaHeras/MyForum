@@ -11,6 +11,16 @@ namespace MyForum.Data.Repository.Repositories
 
         }
 
+        public IQueryable<Topic> GetAllowedTopics()
+        {
+            return GetAll().Where(t => t.IsAllow == true);
+        }
+
+        public IQueryable<Topic> SearchAllowedTopics(string topic)
+        {
+            return GetAll().Where(t => t.TopicName.Contains(topic));
+        }
+
         public Topic GetTopicById(int id)
         {
             return GetAll().FirstOrDefault(t => t.TopicId == id);

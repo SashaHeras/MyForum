@@ -9,5 +9,9 @@ namespace MyForum.Core.Interfaces.Repositories
         public Topic GetTopicById(int id);
 
         public IQueryable<Topic> GetTopicByName(string name);
+
+        public IQueryable<Topic> GetAllowedTopics();
+
+        public IQueryable<Topic> SearchAllowedTopics(string topic);
     }
 }

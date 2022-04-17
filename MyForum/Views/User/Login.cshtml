@@ -10,16 +10,16 @@
                 <label asp-for="Email" class="control-label">E-mail:</label>
             </td>
             <td class="form-group" style="padding-left: 8px">
-                <input type="text" asp-for="Email" class="form-control" />
+                <input type="text" asp-for="Email" class="form-control" style="margin: 3px"/>
                 @Html.ValidationMessageFor(model => model.Email)
             </td>
         </tr>
-        <tr>
+        <tr style="margin-top: 15px;">
             <td class="form-group" style="text-align: right">
                 <label asp-for="Password" class="control-label">Password: </label>
             </td>
-            <td class="form-group" style="padding-left: 8px">
-                <input type="text" asp-for="Password" class="form-control" />
+            <td class="form-group" style="padding-left: 8px;">
+                <input type="password" asp-for="Password" class="form-control" style="margin: 3px"/>
                 @Html.ValidationMessageFor(model => model.Password)
             </td>
         </tr>
@@ -29,11 +29,11 @@
         <tr>
             <td style="margin:5px">
                 <div class="form-group" style="margin: 5px">
-                    <input type="submit" style="width: 100px" value="Log in" class="btn btn-success" />
+                    <input class="btn btn-success" type="submit" style="width: 100px" value="Log in"  />
                 </div>
             </td>
             <td style="margin:5px">
-                <div style="margin: 5px">
+                <div style="margin: 5px; text-align: right">
                     <a href="~/User/Registration">You haven`t acount?</a>
                 </div>
             </td>

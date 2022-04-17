@@ -1,5 +1,12 @@
 ﻿@{
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    if(ViewBag.IsAdmin == true)
+    {
+        Layout = "~/Views/Shared/AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
 }
 
 <a href="~/Post/PostsList/@ViewBag.Post.PostTopicId">Go back</a>
@@ -12,6 +19,12 @@
     <div id="postAuthor">
         Author: <a href="~/User/UserPosts/@ViewBag.Post.PostUserId"> @ViewBag.Post.PostUserName </a>
     </div>
+    <div id="postAuthor">
+        Updated: @ViewBag.Post.Updated
+    </div>
+    <div id="postAuthor">
+        Views: @ViewBag.Post.Views
+    </div>
     <br />
     <div>
         <div id="postDescription">
@@ -19,37 +32,50 @@
         </div>
     </div>
     <br />
-    @if (ViewBag.Post.PostUserId == ViewBag.User.Id)
-    {
-        @using (Html.BeginForm("EditPost", "Post", FormMethod.Post))
-        {
-            <input type="hidden" name="PostId" value=@ViewBag.Post.PostId>
-            <input type="submit" value="Edit post" />
-            <br>
-        }
-        <br />
-        @using (Html.BeginForm("Delete", "Post", FormMethod.Post))
-        {
-            <input type="hidden" name="PostId" value=@ViewBag.Post.PostId>
-            <input type="submit" value="Delete post" />
-            <br>
-        }
-        <br />
-    }
+
+    <table style="width: 600px;">
+        <tr>
+            <td>
+                @using (Html.BeginForm("CreateComplaint", "Post", FormMethod.Post))
+                {
+                    <input type="hidden" name="PostId" value=@ViewBag.Post.PostId>
+                    <input class="btn btn-warning" type="submit" value="Send complaint" style="margin:3px"/>
+                }
+            </td>
+            @if (ViewBag.Post.PostUserId == ViewBag.User.Id)
+            {
+                <td style="text-align: center">
+                    @using (Html.BeginForm("EditPost", "Post", FormMethod.Post))
+                    {
+                        <input type="hidden" name="PostId" value=@ViewBag.Post.PostId>
+                        <input class="btn btn-default" type="submit" value="Edit post" style="margin:3px"/>
+                    }
+                </td>
+                <td style="text-align: right">
+                    @using (Html.BeginForm("Delete", "Post", FormMethod.Post))
+                    {
+                        <input type="hidden" name="PostId" value=@ViewBag.Post.PostId>
+                        <input class="btn btn-danger" type="submit" value="Delete post" style="margin:3px;"/>
+                    }
+                </td>
+            }
+        </tr>
+    </table>
+
+    <br />
+    
     <div style="font-family: cursive;">
         <table>
             <tr><td>Total mark: @ViewBag.Post.Mark</td></tr>
             <tr>
                 <td>
                     <form asp-action="IncreseMark" asp-controller="Mark">
-                        <input style="border-radius: 8px" type="submit" value="Like" class="btn btn-default" />
+                        <input style="border-radius: 8px; margin:5px;" type="submit" value="Like" class="btn btn-default" />
                     </form>
                 </td>
-            </tr>
-            <tr>
                 <td>
                     <form asp-action="DegreseMark" asp-controller="Mark">
-                        <input style="border-radius: 8px" type="submit" value="Dislike" class="btn btn-default" />
+                        <input style="border-radius: 8px; margin:5px; " type="submit" value="Dislike" class="btn btn-default" />
                     </form>
                 </td>
             </tr>
@@ -57,11 +83,10 @@
     </div>
     <br />
 </div>
-<br />
 
 <form asp-action="CreateComment" asp-controller="Comment">
     <div class="form-group">
-        <input type="submit" value="Create comment" class="btn btn-default" />
+        <input class="btn btn-default" type="submit" value="Create comment"  />
     </div>
 </form>
 <br />

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace MyForum.Data.Models
 {
@@ -32,6 +33,12 @@ namespace MyForum.Data.Models
         [Display(Name = "Address")]
         public string Address { get; set; }
 
+        public string Created { get; set; }
+
         public byte[] Picture { get; set; }
+
+        public bool IsAdmin { get; set; }
+
+        public bool IsVerified { get; set; }
     }
 }

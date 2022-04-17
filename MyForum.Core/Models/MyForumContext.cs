@@ -15,6 +15,8 @@ namespace MyForum.Data.Models
 
         public DbSet<UserPostMark> Mark { get; set; }
 
+        public DbSet<Complaint> Complaint { get; set; }
+
         public MyForumContext(DbContextOptions<MyForumContext> options) : base(options)
         {
 

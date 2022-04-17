@@ -1,6 +1,13 @@
 ﻿@model MyForum.Data.Models.Comment
 @{
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    if(ViewBag.IsAdmin == true)
+    {
+        Layout = "~/Views/Shared/AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
 }
 
 <div class="post">
@@ -22,7 +29,7 @@
 <form asp-action="Add" asp-controller="Comment">
     <div class="form-group">
         <label asp-for="CommentText" class="control-label">Comment: </label>
-        <input style="width: 250px;" type="text" asp-for="CommentText" class="form-control" />
+        <input style="width: 450px;" type="text" asp-for="CommentText" class="form-control" />
     </div>
     <div class="form-group">
         <input asp-for="UserId" type="hidden" value="@ViewBag.User.Id" />
@@ -32,6 +39,9 @@
     </div>
     <div class="form-group">
         <input asp-for="UserName" type="hidden" value=@ViewBag.User.Name />
+    </div>
+    <div class="form-group">
+        <input asp-for="IsAllow" type="hidden" value=false />
     </div>
     <div class="form-group">
         <input type="submit" value="Send" class="btn btn-default" />

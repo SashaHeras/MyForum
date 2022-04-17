@@ -1,0 +1,56 @@
+﻿@{
+    if(ViewBag.IsAdmin == true)
+    {
+        Layout = "~/Views/Shared/AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<h4> All posts </h4>
+
+ <table class="table">
+            <thead>
+                <tr>
+                    <td><b>#</b></td>
+                    <td><b>Author</b></td>
+                    <td><b>Name</b></td>
+                    <td><b>Text</b></td>
+                    <td><b>Updated</b></td>
+                    <td><b>Action</b></td>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    foreach(var post in ViewBag.Posts)
+                    {
+                        <tr>
+                        <td>@post.PostId</td>
+                        <td><a href="~/User/UserPosts/@post.UserId">@post.UserName</a></td>
+                        <td>@post.PostName</td>
+                        <td style = "width:550px">@post.Description</td>
+                        <td>@post.Updated</td>
+                            <td>
+                                  @{
+                                      if(post.IsAllow == true){
+                                          <a class="btn btn-warning" href="~/Post/Disallow/@post.PostId">
+                                              Disallow
+                                          </a>
+                                      }
+                                      else{
+                                          <a class="btn btn-success" href="~/Post/Allow/@post.PostId">
+                                              Allow
+                                          </a>
+                                      }
+                                  }
+                                  <a class="btn btn-danger" href="~/Post/DeleteById/@post.PostId">
+                                        Delete
+                                  </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>

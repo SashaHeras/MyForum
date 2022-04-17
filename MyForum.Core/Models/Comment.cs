@@ -7,5 +7,7 @@
         public int PostId { get; set; }
         public string UserName { get; set; }
         public int UserId { get; set; }
+
+        public bool IsAllow { get; set; }
     }
 }

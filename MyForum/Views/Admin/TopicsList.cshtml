@@ -1,0 +1,50 @@
+﻿@{
+    if(ViewBag.IsAdmin == true)
+    {
+        Layout = "~/Views/Shared/AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<h4> All comments </h4>
+
+ <table class="table">
+            <thead>
+                <tr>
+                    <td><b>#</b></td>
+                    <td><b>Name</b></td>
+                    <td><b>Action</b></td>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    foreach(var topic in ViewBag.Topics)
+                    {
+                        <tr>
+                        <td>@topic.TopicId</td>
+                        <td>@topic.TopicName</td>
+                            <td>
+                                  @{
+                                      if(topic.IsAllow == true){
+                                      <a class="btn btn-warning" href="~/Topic/Disallow/@topic.TopicId">
+                                          Disallow
+                                      </a>
+                                      }
+                                      else{
+                                          <a class="btn btn-success" href="~/Topic/Allow/@topic.TopicId">
+                                              Allow
+                                          </a>
+                                      }
+                                  }
+                                  <a class="btn btn-danger" href="~/Topic/Delete/@topic.TopicId">
+                                        Delete
+                                  </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>

@@ -9,34 +9,7 @@
     }
 }
 
-<h2 class="cursive-left" style="color: #D2691E; "> Popular posts: </h2>
-<br>
-
-@using (Html.BeginForm("SearchPosts", "Post", FormMethod.Post, "Search"))
-{
-    <table>
-        <tr>    
-            <td><input class="form-control" type="text" name="Search" style="width: 350px; margin-right: 15px" /></td>
-            <td><input class="btn btn-default pull-right" type="submit" value="Search" /></td>
-        </tr>
-    </table>
-}  
-
-<br />
-
-@{
-    foreach (var post in ViewBag.PopularPosts)
-    {
-        <a id="containerTopic" href="~/Post/Post/@post.PostId">
-            @post.PostName
-        </a>
-        <br>
-        <br>
-    }
-}
-
-<br>
-    <h2 class="cursive-left" style="color: #D2691E; "> All forum topics: </h2>
+<h2 class="cursive-left" style="color: #D2691E; "> All forum topics: </h2><br>
 
 @{
     <table>
@@ -46,7 +19,18 @@
                 {
                     <table>
                         <tr>
-                            <td><input class="form-control" type="text" name="SearchTopic" style="width: 350px; margin-right: 15px" /></td>
+                            <td>
+                                @{
+                                    if(ViewBag.Search != null)
+                                    {
+                                        <input class="form-control" type="text" name="SearchTopic" style="width: 350px; margin-right: 15px" value="@ViewBag.Search"/>
+                                    }
+                                    else
+                                    {
+                                        <input class="form-control" type="text" name="SearchTopic" style="width: 350px; margin-right: 15px" value=""/>
+                                    }
+                                }
+                            </td>
                             <td><input class="btn btn-default pull-right" type="submit" value="Search" /></td>
                         </tr>
                     </table>
@@ -63,15 +47,14 @@
             </td>
         </tr>
     </table>
+
     <br>
 
-    foreach (var topic in ViewBag.AllTopics)
+    foreach (var topic in ViewBag.Topics)
     {
         <a id="containerTopic" href="~/Post/PostsList/@topic.TopicId">
             @topic.TopicName
         </a>
         <br><br>
-    }
-
-           
+    }  
 }
