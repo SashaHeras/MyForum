@@ -1,0 +1,56 @@
+﻿@{ 
+    if(ViewBag.IsAdmin == true)
+    {
+        Layout = "~/Views/Shared/AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<h2 class="cursive-left" style="color: #D2691E; "> All forum polls: </h2>
+
+@{
+    <table>
+        <tr>
+            <td>
+                @using (Html.BeginForm("SearchTopic", "Home", FormMethod.Post, "SearchTopic"))
+                {
+                    <table>
+                        <tr>
+                            <td><input class="form-control" type="text" name="SearchTopic" style="width: 350px; margin-right: 15px" /></td>
+                            <td><input class="btn btn-default pull-right" type="submit" value="Search" /></td>
+                        </tr>
+                    </table>
+                }  
+            </td>
+            <td>
+                <div style="margin: 15px">
+                    @using (Html.BeginForm("SetCountQuestions", "Poll", FormMethod.Post))
+                    {
+                        <input class="btn btn-default" type="submit" value="Create new poll" />
+                        <br>
+                    }
+                </div>
+            </td>
+        </tr>
+    </table>
+    <br>
+
+    <table>
+        @foreach (var poll in ViewBag.AllPolls)
+        {
+            <tr>
+                <td width="91%">
+                    <a href="~/Poll/Poll/@poll.Id">
+                        @poll.Name
+                    </a>
+                </td>
+                <td width="9%">
+                    @poll.CountViews
+                </td>
+            </tr>
+        }
+    </table>   
+}

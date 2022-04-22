@@ -12,6 +12,8 @@ namespace MyForum.Core.Interfaces.Repositories
     {
         public IQueryable<PollQuestion> GetAll();
 
+        public PollQuestion GetQuestionById(int id);
+
         public IQueryable<PollQuestion> GetByPollId(int pollId);
     }
 }

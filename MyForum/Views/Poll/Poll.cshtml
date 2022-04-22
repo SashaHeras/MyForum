@@ -1,0 +1,57 @@
+﻿@model MyForum.Core.Models.UserPollAnswer;
+
+@{ 
+    if(ViewBag.IsAdmin == true)
+    {
+        Layout = "~/Views/Shared/AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<h2 class="cursive-left" style="color: #D2691E; "> @ViewBag.Poll.Name </h2>
+
+<div style="color: #D2691E; "> @ViewBag.Poll.Description </div>
+
+<table class="table">
+            <tbody>
+                @{
+                    foreach(var question in ViewBag.Questions)
+                    {
+                        <tr>
+                        <td>@question.Name</td>
+                        <td>@question.CountAnswers</td>
+                            <td>
+                                  @{
+                                      if(ViewBag.UsersAnswer != question.Id){
+                                          <form asp-controller="Poll" asp-action="SetAnswer">
+                                            <input type="hidden" name="UserId" value="@ViewBag.UserId"/>
+                                            <input type="hidden" name="QuestionId" value="@question.Id"/>
+                                            <input type="hidden" name="PollId" value="@ViewBag.Poll.Id"/>
+                                            <button type="submit" class="btn btn-success">Answer</button>
+                                          </form>
+                                      }
+                                      else{
+                                          <div style="color: green">Your answer!</div>
+                                      }
+                                  }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        <br />
+
+@{
+    if(ViewBag.UserId == ViewBag.Poll.UserId)
+    {
+        <a class="btn btn-warning" href="~/Poll/Edit/@ViewBag.Poll.Id" > Edit</a>
+        <br />
+        <br />
+        <a class="btn btn-danger" href="~/Poll/Delete/@ViewBag.Poll.Id" > Delete</a>
+    }    
+}
+

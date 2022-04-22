@@ -1,0 +1,17 @@
+﻿@{ 
+    if(ViewBag.IsAdmin == true)
+    {
+        Layout = "~/Views/Shared/AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<h2 class="cursive-left" style="color: #D2691E; "> Set count of questions </h2>
+
+<form asp-controller="Poll" asp-action="Create">
+    <input class="form-control" type="number" name="Count"/>
+    <button type="submit" class="btn btn-default">Next</button>
+</form>

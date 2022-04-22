@@ -1,0 +1,65 @@
+﻿@model MyForum.Core.Models.Poll;
+@{ 
+    if(ViewBag.IsAdmin == true)
+    {
+        Layout = "~/Views/Shared/AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<form asp-action="EditPoll" asp-controller="Poll">
+    <div class="form-group">
+        <label asp-for="Name" class="control-label">Poll name</label>
+        <input type="text" asp-for="Name" class="form-control" style="width: 400px" value="@ViewBag.Poll.Name" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Description" class="control-label">Description</label>
+        <input asp-for="Description" class="form-control" style="width: 550px" value="@ViewBag.Poll.Description"> </input>
+    </div>
+    
+    <a class="btn btn-success" href="~/Question/Add/@ViewBag.Poll.Id">+ Add</a>
+    <br />
+    <br />
+
+    @{
+        foreach(var i in ViewBag.Questions)
+        {
+            <div class="form-group">
+                <label class="control-label">Question</label>
+                <table>
+                    <tr>
+                        <td>
+                            <input type="text" name="@i.Id" class="form-control" style="width: 350px" value="@i.Name"/>
+                        </td>
+                        <td> 
+                            <a class="btn btn-default" style="margin-left: 10px" href="~/Question/Delete/@i.Id/@ViewBag.Poll.Id">Delete</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        }
+    }
+
+    <div class="form-group">
+        <input type="hidden" asp-for="Id" class="form-control" value="@ViewBag.Poll.Id" />
+    </div>
+
+    <div class="form-group">
+        <input type="hidden" asp-for="UserId" class="form-control" value="@ViewBag.Poll.UserId" />
+    </div>
+
+    <div class="form-group">
+        <input type="hidden" asp-for="CountQuestions" class="form-control" value="@ViewBag.Poll.CountQuestions" />
+    </div>
+
+    <div class="form-group">
+        <input type="hidden" asp-for="CountViews" class="form-control" value="@ViewBag.Poll.CountViews" />
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="Edit" class="btn btn-default" />
+    </div>
+</form>

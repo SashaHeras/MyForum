@@ -17,5 +17,7 @@ namespace MyForum.Core.Models
         public int CountViews { get; set; }
 
         public int CountQuestions { get; set; }
+
+        public int UserId { get; set; }
     }
 }

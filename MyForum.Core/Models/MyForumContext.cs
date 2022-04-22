@@ -17,6 +17,12 @@ namespace MyForum.Data.Models
 
         public DbSet<Complaint> Complaint { get; set; }
 
+        public DbSet<Poll> Polls { get; set; }
+
+        public DbSet<PollQuestion> PollQuestions { get; set; }
+
+        public DbSet<UserPollAnswer> UsersPollsAnswers { get; set; }
+
         public MyForumContext(DbContextOptions<MyForumContext> options) : base(options)
         {
 

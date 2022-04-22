@@ -15,7 +15,9 @@ namespace MyForum.Core.Interfaces.Repositories
 
         public UserPollAnswer GetById(int id);
 
-        public UserPollAnswer Update(int id, int nqid);
+        public int CountAnswersOnQuestion(int id);
+
+        public UserPollAnswer GetByUserIdAndPollId(int uid, int pid);
 
         public IQueryable<UserPollAnswer> GetByQuestionId(int id);
     }
